@@ -1,27 +1,32 @@
 #include <SDL2\SDL.h>
 #include <SDL2\SDL_image.h>
 
-class tank
+
+
+class Tank
 {
 private:
-    SDL_Surface *tankSurface;
+    SDL_Texture *tankRenderer;
     int lastMovement;
     bool boolHasMoved;
+    int width, height;
     float xPos, yPos;
-    float dx, dy;       // direction on x-axis and y-axis
+    float angle;
+    float speed, turnSpeed;
+
+    SDL_Texture* loadTexture(const char fileName[], SDL_Renderer *renderer);
 
 public:
-    float xVel, yVel;   // velocity on x-axis and y-axis
-    float speed;        // pixels per second
+    float maxSpeed, maxTurnSpeed;        // pixels per second
 
-    tank();
-    bool loadImage(const char *fileName);
+    Tank();
+    bool loadImage(const char *fileName, SDL_Renderer *renderer);
     void setPos(float x, float y);
-    bool render(SDL_Surface *&dest);
+    bool render(SDL_Renderer *&dest);
     void updatePos();
 
     bool hasMoved();
     void handleEvent(const SDL_Event &e);
 
-    ~tank();
+    ~Tank();
 };

@@ -4,16 +4,16 @@
 
 #include <stdio.h>
 
-const int SCREEN_HEIGHT = 480;
 const int SCREEN_WIDTH = 640;
+const int SCREEN_HEIGHT = 480;
 
 bool init();
 bool loadMedia();
 void close();
 
-SDL_Window* gWindow = nullptr;
-SDL_Surface* gScreenSurface = nullptr;
-tank player;
+SDL_Window* window = nullptr;
+SDL_Renderer* screenRenderer = nullptr;
+Tank player;
 
 bool init()
 {
@@ -23,17 +23,17 @@ bool init()
         return false;
     }
     
-    gWindow = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-    if (gWindow == nullptr)
+    window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    if (window == nullptr)
     {
         printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
         return false;
     }
     
-    gScreenSurface = SDL_GetWindowSurface(gWindow);
-    if (gScreenSurface == nullptr)
+    screenRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (screenRenderer == nullptr)
     {
-        printf("Surface could not be created! SDL_Error: %s\n", SDL_GetError());
+        printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
     }
 
     return true;
@@ -41,7 +41,7 @@ bool init()
 
 bool loadMedia()
 {
-    if(!player.loadImage("sprites/blue tank.png"))
+    if(!player.loadImage("sprites/blue tank.png", screenRenderer))
     {
         printf("Unable to load image sprites/blue tank.png! SDL Error: %s\n", SDL_GetError());
         return false;
@@ -52,8 +52,8 @@ bool loadMedia()
 
 void close()
 {
-    SDL_DestroyWindow(gWindow);
-    gWindow = nullptr;
+    SDL_DestroyWindow(window);
+    window = nullptr;
 
     SDL_Quit();
 }
@@ -76,10 +76,10 @@ int main(int argc, char* args[])
         {
             player.setPos(10, 10);
 
-            if(!player.render(gScreenSurface))
+            if(!player.render(screenRenderer))
                 printf("Error\n");
 
-            SDL_UpdateWindowSurface(gWindow);
+            SDL_UpdateWindowSurface(window);
 
             bool quit = false;
             SDL_Event e;
@@ -100,17 +100,17 @@ int main(int argc, char* args[])
                 player.updatePos();
                 if (player.hasMoved())
                 {
-                    if (!player.render(gScreenSurface))
+                    if (!player.render(screenRenderer))
                         printf("Error\n");
 
-                    SDL_UpdateWindowSurface(gWindow);
+                    SDL_UpdateWindowSurface(window);
                 }
 
                 ++frames;
 
                 if (SDL_GetTicks() - start >= 1000)
                 {
-                    printf("%d\n", frames);
+                    //printf("%d\n", frames);
                     frames = 0;
                     start = SDL_GetTicks();
                 }
