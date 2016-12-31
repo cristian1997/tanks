@@ -1,20 +1,18 @@
 #include <SDL2\SDL.h>
 #include <SDL2\SDL_image.h>
-
+#include "texture.h"
 
 
 class Tank
 {
 private:
-    SDL_Texture *tankRenderer;
+    Texture tankTexture;
     int lastMovement;
     bool boolHasMoved;
     int width, height;
     float xPos, yPos;
     float angle;
     float speed, turnSpeed;
-
-    SDL_Texture* loadTexture(const char fileName[], SDL_Renderer *renderer);
 
 public:
     float maxSpeed, maxTurnSpeed;        // pixels per second
