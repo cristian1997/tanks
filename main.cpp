@@ -77,7 +77,7 @@ int main(int argc, char* args[])
             player.setPos(10, 10);
 
             if(!player.render(screenRenderer))
-                printf("Error\n");
+                printf("Error rendering player\n");
 
             SDL_UpdateWindowSurface(window);
 
