@@ -5,26 +5,9 @@
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
-SDL_Texture * Tank::loadTexture(const char fileName[], SDL_Renderer *renderer)
-{
-    SDL_Surface *tempSurface;
-    SDL_Texture *retTexture;
-
-    tempSurface = IMG_Load(fileName);
-    if (tempSurface == nullptr) return nullptr;
-
-    SDL_SetColorKey(tempSurface, SDL_TRUE, SDL_MapRGB(tempSurface->format, 0xFF, 0xFF, 0xFF));
-
-    retTexture = SDL_CreateTextureFromSurface(renderer, tempSurface);
-
-    SDL_FreeSurface(tempSurface);
-    return retTexture;
-}
 
 Tank::Tank()
 {
-    tankRenderer = nullptr;
-    boolHasMoved = false;
     lastMovement = SDL_GetTicks();
 
     maxTurnSpeed = 144;
@@ -34,15 +17,10 @@ Tank::Tank()
 
 bool Tank::loadImage(const char * fileName, SDL_Renderer *renderer)
 {
-    tankRenderer = loadTexture(fileName, renderer);
-    if (tankRenderer == nullptr) return false;
-
-    SDL_QueryTexture(tankRenderer, nullptr, nullptr, &width, &height);
-
-    return true;
+    return tankTexture.loadFromFile(fileName, renderer);
 }
 
-void Tank::setPos(float x, float y)
+void Tank::setPos(double x, double y)
 {
     xPos = x;
     yPos = y;
@@ -50,15 +28,7 @@ void Tank::setPos(float x, float y)
 
 bool Tank::render(SDL_Renderer* &renderer)
 {
-    SDL_Rect pos = {(int)xPos, (int)yPos, width, height};
-
-    boolHasMoved = false;
-    SDL_RendererFlip fp = SDL_FLIP_NONE;
-    if (SDL_RenderCopyEx(renderer, tankRenderer, nullptr, &pos, angle, nullptr, fp)) return false;
-
-    SDL_RenderPresent(renderer);
-
-    return true;
+    return tankTexture.render(renderer, (int)xPos, (int)yPos, angle);
 }
 
 void Tank::updatePos()
@@ -77,12 +47,31 @@ void Tank::updatePos()
     angle += turnSpeed * (time - lastMovement) / 1000.0;
 
     lastMovement = time;
-    boolHasMoved = (speed || turnSpeed);
 }
 
-bool Tank::hasMoved()
+double Tank::getX()
 {
-    return boolHasMoved;
+    return xPos;
+}
+
+double Tank::getY()
+{
+    return yPos;
+}
+
+double Tank::getW()
+{
+    return tankTexture.getW();
+}
+
+double Tank::getH()
+{
+    return tankTexture.getH();
+}
+
+double Tank::getAngle()
+{
+    return angle;
 }
 
 void Tank::handleEvent(const SDL_Event &e)
@@ -109,12 +98,9 @@ void Tank::handleEvent(const SDL_Event &e)
             }
             break;
     }
-
-    printf("%f\nsin = %f\ncos = %f\n", angle, sin(angle), cos(angle));
 }
 
 Tank::~Tank()
 {
-    SDL_DestroyTexture(tankRenderer);
-    tankRenderer = nullptr;
+    tankTexture.~Texture();
 }
