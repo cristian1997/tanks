@@ -1,7 +1,9 @@
 #include "tank.h"
+#include "bullet.h"
 #include <SDL2\SDL.h>
 #include <SDL2\SDL_image.h>
 
+#include <vector>
 #include <stdio.h>
 
 const int SCREEN_WIDTH = 640;
@@ -14,6 +16,7 @@ void close();
 SDL_Window* window = nullptr;
 SDL_Renderer* screenRenderer = nullptr;
 Tank player;
+std::vector<Bullet> bullets;
 
 bool init()
 {
@@ -47,6 +50,12 @@ bool loadMedia()
         return false;
     }
 
+    if (!Bullet::loadImage("sprites/bullet.png", screenRenderer))
+    {
+        printf("Unable to load image sprites/bullet.png! SDL Error: %s\n", SDL_GetError());
+        return false;
+    }
+
     return true;
 }
 
@@ -77,7 +86,7 @@ int main(int argc, char* args[])
             player.setPos(10, 10);
 
             if(!player.render(screenRenderer))
-                printf("Error\n");
+                printf("Error rendering player\n");
 
             SDL_UpdateWindowSurface(window);
 
@@ -94,23 +103,36 @@ int main(int argc, char* args[])
                     {
                         quit = true;
                     }
+                    else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE)
+                    {
+                        Bullet bullet(player.getX() + player.getW() + 5.0, player.getY() + player.getH() / 2, player.getAngle());
+                        bullets.push_back(bullet);
+                    }
                     else player.handleEvent(e);
                 }
-
+                SDL_RenderClear(screenRenderer);
                 player.updatePos();
-                if (player.hasMoved())
-                {
-                    if (!player.render(screenRenderer))
-                        printf("Error\n");
+                
+                if (!player.render(screenRenderer))
+                    printf("Error\n");
 
-                    SDL_UpdateWindowSurface(window);
+                for (auto b : bullets)
+                {
+                    b.updatePos();
+                    if (!b.render(screenRenderer))
+                    {
+                        printf("Error rendering bullet\n");
+                        printf("%s\n", SDL_GetError());
+                    }
                 }
+
+                SDL_RenderPresent(screenRenderer);
 
                 ++frames;
 
                 if (SDL_GetTicks() - start >= 1000)
                 {
-                    //printf("%d\n", frames);
+                    printf("%d\n", frames);
                     frames = 0;
                     start = SDL_GetTicks();
                 }
