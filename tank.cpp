@@ -22,27 +22,27 @@ bool Tank::loadImage(const char * fileName, SDL_Renderer *renderer)
 
 void Tank::setPos(double x, double y)
 {
-    xPos = x;
-    yPos = y;
+    pos.x = x;
+    pos.y = y;
 }
 
 bool Tank::render(SDL_Renderer* &renderer)
 {
-    return tankTexture.render(renderer, (int)xPos, (int)yPos, angle);
+    return tankTexture.render(renderer, pos, angle);
 }
 
 void Tank::updatePos()
 {
     int time = SDL_GetTicks();
 
-    xPos += speed * (time - lastMovement) * cos(angle / 180.0 * acos(-1)) / 1000.0;
-    yPos += speed * (time - lastMovement) * sin(angle / 180.0 * acos(-1)) / 1000.0;
+    pos.x += speed * (time - lastMovement) * cos(angle / 180.0 * acos(-1)) / 1000.0;
+    pos.y += speed * (time - lastMovement) * sin(angle / 180.0 * acos(-1)) / 1000.0;
 
-    if (xPos < 0) xPos = 0;
-    if (xPos + width > SCREEN_WIDTH) xPos = SCREEN_WIDTH - width;
+    if (pos.x < 0) pos.x = 0;
+    if (pos.x + width > SCREEN_WIDTH) pos.x = SCREEN_WIDTH - width;
 
-    if (yPos < 0) yPos = 0;
-    if (yPos + height > SCREEN_HEIGHT) yPos = SCREEN_HEIGHT - height;
+    if (pos.y < 0) pos.y = 0;
+    if (pos.y + height > SCREEN_HEIGHT) pos.y = SCREEN_HEIGHT - height;
 
     angle += turnSpeed * (time - lastMovement) / 1000.0;
 
@@ -51,12 +51,12 @@ void Tank::updatePos()
 
 double Tank::getX()
 {
-    return xPos;
+    return pos.x;
 }
 
 double Tank::getY()
 {
-    return yPos;
+    return pos.y;
 }
 
 double Tank::getW()

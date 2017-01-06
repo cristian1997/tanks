@@ -1,5 +1,6 @@
 #include "tank.h"
 #include "bullet.h"
+#include "geometry.h"
 #include <SDL2\SDL.h>
 #include <SDL2\SDL_image.h>
 
@@ -105,7 +106,13 @@ int main(int argc, char* args[])
                     }
                     else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE)
                     {
-                        Bullet bullet(player.getX() + player.getW() + 5.0, player.getY() + player.getH() / 2, player.getAngle());
+                        double x = player.getX() + player.getW() + 5.0;
+                        double y = player.getY() + (player.getH() - Bullet::getH()) / 2.0;
+                        double x0 = player.getX() + player.getW() / 2;
+                        double y0 = player.getY() + player.getH() / 2;
+
+                        Point ret = Geometry::rotatePoint(Point(x, y), Point(x0, y0), player.getAngle());
+                        Bullet bullet(ret.x, ret.y, player.getAngle(), Point(0, 0));
                         bullets.push_back(bullet);
                     }
                     else player.handleEvent(e);

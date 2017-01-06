@@ -4,11 +4,12 @@
 Texture Bullet::bulletTexture;
 int Bullet::width, Bullet::height;
 
-Bullet::Bullet(double x, double y, double ang)
+Bullet::Bullet(double x, double y, double ang, Point _pivot)
 {
-    xPos = x;
-    yPos = y;
+    pos.x = x;
+    pos.y = y;
     angle = ang;
+    pivot = _pivot;
     lastMovement = SDL_GetTicks();
 }
 
@@ -19,17 +20,27 @@ bool Bullet::loadImage(const char fileName[], SDL_Renderer * renderer)
 
 bool Bullet::render(SDL_Renderer *& dest)
 {
-    return bulletTexture.render(dest, xPos, yPos, angle);
+    return bulletTexture.render(dest, pos, angle, &pivot);
 }
 
 void Bullet::updatePos()
 {
     int time = SDL_GetTicks();
 
-    xPos += speed * (time - lastMovement) * cos(angle / 180.0 * acos(-1)) / 1000.0;
-    yPos += speed * (time - lastMovement) * sin(angle / 180.0 * acos(-1)) / 1000.0;
+    pos.x += speed * (time - lastMovement) * cos(angle / 180.0 * acos(-1)) / 1000.0;
+    pos.y += speed * (time - lastMovement) * sin(angle / 180.0 * acos(-1)) / 1000.0;
 
     lastMovement = time;
+}
+
+double Bullet::getW()
+{
+    return bulletTexture.getW();
+}
+
+double Bullet::getH()
+{
+    return bulletTexture.getH();
 }
 
 Bullet::~Bullet()

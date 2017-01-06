@@ -9,7 +9,7 @@ private:
     Texture tankTexture;
     int lastMovement;
     int width, height;
-    double xPos, yPos;
+    Point pos;
     double angle;
     double speed, turnSpeed;
 
