@@ -8,11 +8,12 @@ const int SCREEN_HEIGHT = 480;
 
 Tank::Tank()
 {
-    lastMovement = SDL_GetTicks();
+    lastMovement = lastFire = SDL_GetTicks();
 
     maxTurnSpeed = 144;
     maxSpeed = 100;
     angle = 0.0;
+    fireRate = 2.0;
 }
 
 bool Tank::loadImage(const char * fileName, SDL_Renderer *renderer)
@@ -72,6 +73,19 @@ double Tank::getH()
 double Tank::getAngle()
 {
     return angle;
+}
+
+bool Tank::fire()
+{
+    int time = SDL_GetTicks();
+
+    if (time - lastFire > 1000.0 / fireRate)
+    {
+        lastFire = time;
+        return true;
+    }
+
+    return false;
 }
 
 void Tank::handleEvent(const SDL_Event &e)

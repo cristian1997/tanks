@@ -106,6 +106,8 @@ int main(int argc, char* args[])
                     }
                     else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE)
                     {
+                        if (!player.fire()) continue;
+
                         double x = player.getX() + player.getW() + 5.0;
                         double y = player.getY() + (player.getH() - Bullet::getH()) / 2.0;
                         double x0 = player.getX() + player.getW() / 2;
