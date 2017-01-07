@@ -7,11 +7,12 @@ class Tank
 {
 private:
     Texture tankTexture;
-    int lastMovement;
+    int lastMovement, lastFire;
     int width, height;
-    double xPos, yPos;
+    Point pos;
     double angle;
     double speed, turnSpeed;
+    double fireRate; // rounds per second
 
 public:
     double maxSpeed, maxTurnSpeed;        // pixels per second
@@ -26,6 +27,7 @@ public:
     double getW();
     double getH();
     double getAngle();
+    bool fire();
 
     void handleEvent(const SDL_Event &e);
 
