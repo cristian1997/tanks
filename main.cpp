@@ -1,6 +1,6 @@
 #include "tank.h"
 #include "bullet.h"
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <SDL_image.h>
 #include <vector>
 #include <stdio.h>
