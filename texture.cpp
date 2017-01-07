@@ -23,12 +23,16 @@ bool Texture::loadFromFile(const char fileName[], SDL_Renderer * renderer)
     return (retTexture != nullptr);
 }
 
-bool Texture::render(SDL_Renderer *&dest, double xPos, double yPos, double angle)
+bool Texture::render(SDL_Renderer *&dest, Point pos, double angle, Point *pivot)
 {
-    SDL_Rect pos = {(int)xPos, (int)yPos, width, height};
-
+    SDL_Rect rect = {(int)pos.x, (int)pos.y, width, height};
     SDL_RendererFlip fp = SDL_FLIP_NONE;
-    if (SDL_RenderCopyEx(dest, texture, nullptr, &pos, angle, nullptr, fp)) return false;
+    SDL_Point *p;
+
+    if (pivot) { p = new SDL_Point;  p->x = pivot->x; p->y = pivot->y; }
+    else p = nullptr;
+
+    if (SDL_RenderCopyEx(dest, texture, nullptr, &rect, angle, p, fp)) return false;
 
     return true;
 }
