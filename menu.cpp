@@ -1,41 +1,36 @@
 #include "menu.h"
 #include "level.h"
 
-bool Menu::loadImage(const char *fileName, SDL_Renderer *renderer)
+bool Menu::loadImage(const char *fileName)
 {
-	return menuTexture.loadFromFile(fileName, renderer);
+	return menuTexture.loadFromFile(fileName, screenRenderer);
 }
 
-bool Menu::render(SDL_Renderer *&renderer)
+bool Menu::render()
 {    
 
 	SDL_Rect rectForPlay = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4, SCREEN_WIDTH / 2 , SCREEN_HEIGHT / 4 - 50 };
 	SDL_Rect rectForOptions = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4 + SCREEN_HEIGHT / 4 - 49 , SCREEN_WIDTH / 2 , SCREEN_HEIGHT / 4 - 50 };
 	SDL_Rect rectForExit = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4 + SCREEN_HEIGHT / 4 - 50 + SCREEN_HEIGHT / 4 - 48 , SCREEN_WIDTH / 2 , SCREEN_HEIGHT / 4 - 50 };
-	SDL_SetRenderDrawColor(renderer, 0x00, 0xFF, 0x00, 0xFF);
+	SDL_SetRenderDrawColor(screenRenderer, 0x00, 0xFF, 0x00, 0xFF);
 
-	SDL_RenderFillRect(renderer, &rectForPlay);
-	SDL_RenderFillRect(renderer, &rectForOptions);
-	SDL_RenderFillRect(renderer, &rectForExit);
+	SDL_RenderFillRect(screenRenderer, &rectForPlay);
+	SDL_RenderFillRect(screenRenderer, &rectForOptions);
+	SDL_RenderFillRect(screenRenderer, &rectForExit);
 
-    return menuTexture.render(renderer, 0.0 ,0.0 ,0.0);
+    return menuTexture.render(screenRenderer, 0.0 ,0.0 ,0.0);
 }
-
-bool Menu::play()
+void Menu::run(const char *fileName)
 {
-	 return joc.run(); 
-}  
-
-bool::Menu::options()
-{
-	return optiuni.run();
+	if (!(loadImage(fileName, screenRenderer)))
+	{
+		printf("Unable to loadImagin in main menu !\n");
+	}
+	else if (!(render(screenRenderer)))
+	{
+		printf("Unable to render in main menu !\n");
+	}
 }
-
-bool Menu::exit()
-{
-	return 0;
-}
-
 
 
 
