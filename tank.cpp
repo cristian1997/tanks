@@ -9,12 +9,14 @@ double constexpr PI = M_PI;
 
 Tank::Tank()
 {
-    lastMovement = lastFire = SDL_GetTicks();
+    std::cout << "";
+    lastMovement = SDL_GetTicks();
+    lastFire = -10000;
 
     maxTurnSpeed = 144;
     maxSpeed = 100;
     angle = 0.0;
-    fireRate = 2.0;
+    fireRate = 20000000000.0;
 }
 
 bool Tank::loadImage(const char * fileName, SDL_Renderer *renderer)
@@ -22,10 +24,17 @@ bool Tank::loadImage(const char * fileName, SDL_Renderer *renderer)
     return tankTexture.loadFromFile(fileName, renderer);
 }
 
-void Tank::setPos(double x, double y)
+void Tank::setPos(double x, double y, double _angle)
 {
     pos.x = x;
     pos.y = y;
+    angle = _angle;
+
+    lastMovement = SDL_GetTicks();
+    lastFire = -10000;
+
+    speed = 0;
+    turnSpeed = 0;
 }
 
 bool Tank::render(SDL_Renderer* &renderer)

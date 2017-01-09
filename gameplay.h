@@ -1,15 +1,22 @@
-#include<SDL2/SDL.h>
-#include<SDL2/SDL_image.h>
-#include"tank.h"
-#include"bullet.h"
-#include"texture.h"
-#include"level.h"
-#include"geometry.h"
+#include "tank.h"
+#include "bullet.h"
+#include "texture.h"
+#include "level.h"
+#include "geometry.h"
+#include "gamedata.h"
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <vector>
 
 class GamePlay 
 {
-public:
+private:
 	Tank player;
+    std::vector<Bullet> bullets;
+
 	void openFile(int nrLevel);
-	void run(int nrLevel);
+
+public:
+    GameData::Scene run();
 };
