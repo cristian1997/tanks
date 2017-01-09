@@ -1,6 +1,6 @@
 #include"level.h"
 
-void open(int nrLevel)
+void Level::open(int nrLevel)
 {
 	std::string s = "level" + std::to_string(nrLevel);
 	std::fstream f(s);
@@ -8,9 +8,9 @@ void open(int nrLevel)
 	renderMap(f);
 }
 
-void renderMap(std::fstream &f)
+void Level::renderMap(std::fstream &f)
 {
-	int x;
+	/*int x;
 	int i = 0;
 	int textureTypeVector[64*48];
 	f >> x;
@@ -30,6 +30,6 @@ void renderMap(std::fstream &f)
 		i++;
 	}
 
-	mapa.run(textureTypeVector);
+	mapa.run(textureTypeVector);*/
 
 }

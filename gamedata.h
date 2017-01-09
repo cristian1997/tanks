@@ -1,5 +1,7 @@
 #pragma once
 
+#include "SDL2/SDL.h"
+
 class GameData
 {
 public:
@@ -13,6 +15,9 @@ public:
         OPTIONS,
         QUIT
     };
+
+    SDL_Window *window = nullptr;
+    SDL_Renderer *screenRenderer = nullptr;
 };
 
 extern GameData GD;
