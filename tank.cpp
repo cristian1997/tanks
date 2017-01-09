@@ -1,20 +1,19 @@
 #include "tank.h"
+#include "gamedata.h"
 #include <iostream>
 #include <cmath>
-
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
-double constexpr PI = M_PI;
 
 
 Tank::Tank()
 {
-    lastMovement = lastFire = SDL_GetTicks();
+    std::cout << "";
+    lastMovement = SDL_GetTicks();
+    lastFire = -10000;
 
     maxTurnSpeed = 144;
     maxSpeed = 100;
     angle = 0.0;
-    fireRate = 2.0;
+    fireRate = 20000000000.0;
 }
 
 bool Tank::loadImage(const char * fileName, SDL_Renderer *renderer)
@@ -22,10 +21,17 @@ bool Tank::loadImage(const char * fileName, SDL_Renderer *renderer)
     return tankTexture.loadFromFile(fileName, renderer);
 }
 
-void Tank::setPos(double x, double y)
+void Tank::setPos(double x, double y, double _angle)
 {
     pos.x = x;
     pos.y = y;
+    angle = _angle;
+
+    lastMovement = SDL_GetTicks();
+    lastFire = -10000;
+
+    speed = 0;
+    turnSpeed = 0;
 }
 
 bool Tank::render(SDL_Renderer* &renderer)
@@ -41,10 +47,10 @@ void Tank::updatePos()
     pos.y += speed * (time - lastMovement) * sin(angle / 180.0 * PI) / 1000.0;
 
     if (pos.x < 0) pos.x = 0;
-    if (pos.x + width > SCREEN_WIDTH) pos.x = SCREEN_WIDTH - width;
+    if (pos.x + width > GD.SCREEN_WIDTH) pos.x = GD.SCREEN_WIDTH - width;
 
     if (pos.y < 0) pos.y = 0;
-    if (pos.y + height > SCREEN_HEIGHT) pos.y = SCREEN_HEIGHT - height;
+    if (pos.y + height > GD.SCREEN_HEIGHT) pos.y = GD.SCREEN_HEIGHT - height;
 
     angle += turnSpeed * (time - lastMovement) / 1000.0;
 

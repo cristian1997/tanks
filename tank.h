@@ -1,3 +1,5 @@
+#pragma once
+
 #include <SDL2\SDL.h>
 #include <SDL2\SDL_image.h>
 #include "texture.h"
@@ -19,7 +21,7 @@ public:
 
     Tank();
     bool loadImage(const char *fileName, SDL_Renderer *renderer);
-    void setPos(double x, double y);
+    void setPos(double x, double y, double angle);
     bool render(SDL_Renderer *&dest);
     void updatePos();
     double getX();

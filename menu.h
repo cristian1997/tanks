@@ -1,26 +1,26 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 #include "texture.h"
-#include<stdio.h>
+#include "gamedata.h"
 
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+#include <SDL2\SDL.h>
+#include <SDL2\SDL_image.h>
+#include <stdio.h>
 
 class Menu
 {
 private:
-	Texture menuTexture;
+	Texture background;
+
+    bool loadImage(const char *fileName, SDL_Renderer *renderer);
+    bool render(SDL_Renderer *&dest);
 
 public:
-	GamePlay joc;
-	Options optiuni;
+	//GamePlay joc;
+	//Options optiuni;
 
-	void run(const char *fileName);
-	bool loadImage(const char *fileName, SDL_Renderer *renderer);
-	bool render(SDL_Renderer *&dest);
-	bool play();
+    GameData::Scene run();
+	/*bool play();
 	bool options();
 	bool exit();
-    int  playerChoiceHandler();
+    int  playerChoiceHandler();*/
 };
 
