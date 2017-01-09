@@ -1,12 +1,12 @@
 #include "gameplay.h"
-#include "level.h"
+//#include "level.h"
 
 #include <iostream>
 
-void GamePlay::openFile(int nrLevel)
+/*void GamePlay::openFile(int nrLevel)
 {
-	//open(nrLevel);
-}
+	open(nrLevel);
+}*/
 
 GameData::Scene GamePlay::run()
 {
@@ -35,24 +35,13 @@ GameData::Scene GamePlay::run()
 
     while (!quit)
     {
-        if (SDL_PollEvent(&e))
+        player.shouldFire = false;
+
+        while (SDL_PollEvent(&e))
         {
             if (e.type == SDL_QUIT)
             {
                 quit = true;
-            }
-            else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_SPACE)
-            {
-                if (!player.fire()) continue;
-
-                double x = player.getX() + player.getW() + 5.0;
-                double y = player.getY() + (player.getH() - Bullet::getH()) / 2.0;
-                double x0 = player.getX() + player.getW() / 2;
-                double y0 = player.getY() + player.getH() / 2;
-
-                Point ret = Geometry::rotatePoint(Point(x, y), Point(x0, y0), player.getAngle());
-                Bullet bullet(ret.x, ret.y, player.getAngle(), Point(0, 0));
-                bullets.push_back(bullet);
             }
             else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)
             {
@@ -60,19 +49,35 @@ GameData::Scene GamePlay::run()
             }
             else player.handleEvent(e);
         }
-        SDL_RenderClear(GD.screenRenderer);
-        player.updatePos();
 
+        if (player.shouldFire)
+        {
+            double x = player.getX() + player.getW() + 5.0;
+            double y = player.getY() + (player.getH() - Bullet::getH()) / 2.0;
+            double x0 = player.getX() + player.getW() / 2;
+            double y0 = player.getY() + player.getH() / 2;
+
+            Point ret = Geometry::rotatePoint(Point(x, y), Point(x0, y0), player.getAngle());
+            Bullet bullet(ret.x, ret.y, player.getAngle(), Point(0, 0));
+            bullets.push_back(bullet);
+        }
+
+        SDL_RenderClear(GD.screenRenderer);
+
+        player.updatePos();
         if (!player.render(GD.screenRenderer))
-            printf("Error\n");
+        {
+            printf("Error rendering player\n%s\n", SDL_GetError());
+            return GD.QUIT;
+        }
 
         for (auto b : bullets)
         {
             b.updatePos();
             if (!b.render(GD.screenRenderer))
             {
-                printf("Error rendering bullet\n");
-                printf("%s\n", SDL_GetError());
+                printf("Error rendering bullet\n%s\n", SDL_GetError());
+                return GD.QUIT;
             }
         }
 

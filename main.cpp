@@ -1,5 +1,3 @@
-#include "tank.h"
-#include "bullet.h"
 #include "menu.h"
 #include "gamedata.h"
 #include "gameplay.h"
@@ -43,6 +41,12 @@ bool init()
 
 bool loadMedia()
 {
+    if (!menu.loadMedia())
+    {
+        printf("Couldn't load menu media\n");
+        return false;
+    }
+
     if (!Bullet::loadImage("sprites/bullet.png", GD.screenRenderer))
     {
         printf("Unable to load image sprites/bullet.png! SDL Error: %s\n", SDL_GetError());
@@ -90,6 +94,7 @@ int main(int argc, char* args[])
                         break;
                     case GD.OPTIONS:
                         //currentScene = optiuni.run();
+                        quit = true;
                         break;
                     case GD.GAMEPLAY:
                         currentScene = gamePlay.run();

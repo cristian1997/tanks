@@ -2,8 +2,8 @@
 
 bool Texture::loadFromFile(const char fileName[], SDL_Renderer * renderer)
 {
-    SDL_Surface *tempSurface;
-    SDL_Texture *retTexture;
+    SDL_Surface *tempSurface = nullptr;
+    SDL_Texture *retTexture = nullptr;
 
     tempSurface = IMG_Load(fileName);
     if (tempSurface == nullptr) return nullptr;
@@ -23,7 +23,7 @@ bool Texture::loadFromFile(const char fileName[], SDL_Renderer * renderer)
     return (retTexture != nullptr);
 }
 
-bool Texture::render(SDL_Renderer *&dest, Point pos, double angle, Point *pivot)
+bool Texture::render(SDL_Renderer *&dest, Point pos, double angle, const Point *pivot) const
 {
     SDL_Rect rect = {(int)pos.x, (int)pos.y, width, height};
     SDL_RendererFlip fp = SDL_FLIP_NONE;
@@ -37,12 +37,12 @@ bool Texture::render(SDL_Renderer *&dest, Point pos, double angle, Point *pivot)
     return true;
 }
 
-double Texture::getW()
+double Texture::getW() const
 {
     return width;
 }
 
-double Texture::getH()
+double Texture::getH() const
 {
     return height;
 }

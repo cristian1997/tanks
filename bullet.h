@@ -19,10 +19,8 @@ public:
 
     Bullet(double x, double y, double ang, Point _pivot);
     static bool loadImage(const char fileName[], SDL_Renderer *renderer);
-    bool render(SDL_Renderer *&dest);
+    bool render(SDL_Renderer *&dest) const;
     void updatePos();
     static double getW();
     static double getH();
-
-    ~Bullet();
 };
