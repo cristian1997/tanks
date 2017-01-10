@@ -41,13 +41,13 @@ bool GamePlay::render()
 {
     SDL_RenderClear(GD.screenRenderer);
 
-    if (!player.render())
+    if (!player.isDestroyed && !player.render())
     {
         printf("Error rendering player\n%s\n", SDL_GetError());
         return false;
     }
 
-    if (!tt.render())
+    if (!tt.isDestroyed && !tt.render())
     {
         printf("Error rendering player\n%s\n", SDL_GetError());
         return false;
@@ -72,14 +72,18 @@ bool GamePlay::checkCollisions()
     auto playerPoly = player.getPolygon();
     auto ttPoly = tt.getPolygon();
 
-    for (const auto &b : bullets)
+    for (auto &b : bullets)
     {
         auto bulletPoly = b.getPolygon();
 
-        if (Geometry::intersect(playerPoly, bulletPoly))
+        if (!player.isDestroyed && Geometry::intersect(playerPoly, bulletPoly))
+            player.isDestroyed = true,
+            b.isDestroyed = true,
             std::cout << "Player hit\n";
 
-        if (Geometry::intersect(ttPoly, bulletPoly))
+        if (!tt.isDestroyed && Geometry::intersect(ttPoly, bulletPoly))
+            tt.isDestroyed = true,
+            b.isDestroyed = true,
             std::cout << "Enemy hit\n";
     }
 
@@ -142,6 +146,11 @@ GameData::Scene GamePlay::run()
 
         updatePos();
         checkCollisions();
+
+        bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
+            [](Bullet b) -> bool {return b.isDestroyed; }),
+            bullets.end()
+        );
 
         if (!render()) return GD.QUIT;
 

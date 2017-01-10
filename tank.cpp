@@ -58,6 +58,7 @@ void Tank::setPos(double x, double y, double _angle)
     speed = 0;
     turnSpeed = 0;
     shouldFire = false;
+    isDestroyed = false;
 }
 
 bool Tank::render() const

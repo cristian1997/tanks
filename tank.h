@@ -26,6 +26,7 @@ private:
 public:
     double maxSpeed, maxTurnSpeed;        // pixels per second
     bool shouldFire;
+    bool isDestroyed;
 
     Tank();
     bool loadImage(const char *fileName);

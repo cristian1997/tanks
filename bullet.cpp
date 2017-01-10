@@ -11,6 +11,7 @@ Bullet::Bullet(double x, double y, double ang, Point _pivot)
     pos.y = y;
     angle = ang;
     pivot = _pivot;
+    isDestroyed = false;
     lastMovement = SDL_GetTicks();
 }
 
