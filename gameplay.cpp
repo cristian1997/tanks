@@ -10,17 +10,20 @@
 
 bool GamePlay::loadMedia()
 {
-    if (!player.loadImage("sprites/blue tank.png"))
+    /*if (!player.loadImage("sprites/blue tank.png"))
     {
         printf("Unable to load image sprites/blue tank.png! SDL Error: %s\n", SDL_GetError());
         return false;
-    }
+    }*/
 
-    if (!tt.loadImage("sprites/blue tank.png"))
+    player.tankTexture = GD.playerText;
+    tt.tankTexture = GD.playerText;
+
+    /*if (!tt.loadImage("sprites/blue tank.png"))
     {
         printf("Unable to load image sprites/blue tank.png! SDL Error: %s\n", SDL_GetError());
         return false;
-    }
+    }*/
 
     return true;
 }
@@ -98,8 +101,11 @@ GameData::Scene GamePlay::run()
 
     if (!loadMedia()) return GD.QUIT;
 
-    player.setPos(10, 10, 0.0);
-    tt.setPos(500, 60, 0.0);
+    player.initialize(10, 10, 0.0);
+    tt.initialize(500, 60, 0.0);
+
+    player.setKeys(0);
+    tt.setKeys(1);
 
     if (!render()) return GD.QUIT;
 

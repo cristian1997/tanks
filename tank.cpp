@@ -3,6 +3,14 @@
 #include <iostream>
 
 
+bool Tank::setKeys(int ind)
+{
+    if (ind < 0 || ind >= GD.nrMaxTanks) return false;
+
+    keys = GD.keys[ind];
+    return true;
+}
+
 bool Tank::outOfScreen() const
 {
     double xmin = GD.SCREEN_WIDTH, xmax = -1, ymin = GD.SCREEN_HEIGHT, ymax = -1;
@@ -20,33 +28,13 @@ bool Tank::outOfScreen() const
 
 Tank::Tank()
 {
-    lastMovement = SDL_GetTicks();
-    lastFire = -10000;
-
     maxTurnSpeed = 144;
     maxSpeed = 100;
     angle = 0.0;
-    fireRate = 2.0;
-
-    keys[std::string("up")] = SDLK_UP;
-    keys[std::string("down")] = SDLK_DOWN;
-    keys[std::string("left")] = SDLK_LEFT;
-    keys[std::string("right")] = SDLK_RIGHT;
-    keys[std::string("fire")] = SDLK_SPACE;
+    defaultFireRate = fireRate = 2.0;
 }
 
-bool Tank::loadImage(const char * fileName)
-{
-    if (!tankTexture.loadFromFile(fileName))
-        return false;
-
-    width = tankTexture.getW();
-    height = tankTexture.getH();
-
-    return true;
-}
-
-void Tank::setPos(double x, double y, double _angle)
+void Tank::initialize(double x, double y, double _angle)
 {
     pos.x = x;
     pos.y = y;
@@ -54,6 +42,9 @@ void Tank::setPos(double x, double y, double _angle)
 
     lastMovement = SDL_GetTicks();
     lastFire = -10000;
+
+    width = tankTexture->getW();
+    height = tankTexture->getH();
 
     speed = 0;
     turnSpeed = 0;
@@ -63,7 +54,7 @@ void Tank::setPos(double x, double y, double _angle)
 
 bool Tank::render() const
 {
-    return tankTexture.render(pos, angle);
+    return tankTexture->render(GD.screenRenderer, pos, angle);
 }
 
 void Tank::updatePos()
@@ -159,9 +150,4 @@ void Tank::handleEvent(const SDL_Event &e)
             else if (sym == keys[std::string("right")]) { if (turnSpeed > 0) turnSpeed = 0; }
             break;
     }
-}
-
-Tank::~Tank()
-{
-    tankTexture.~Texture();
 }

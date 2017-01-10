@@ -12,25 +12,25 @@
 class Tank
 {
 private:
-    Texture tankTexture;
     int lastMovement, lastFire;
     int width, height;
     Point pos;
     double angle;
     double speed, turnSpeed;
-    double fireRate; // rounds per second
+    double defaultFireRate, fireRate; // rounds per second
     std::map<std::string, decltype(SDLK_0)> keys;
 
     bool outOfScreen() const;
 
 public:
+    Texture *tankTexture;
     double maxSpeed, maxTurnSpeed;        // pixels per second
     bool shouldFire;
     bool isDestroyed;
 
     Tank();
-    bool loadImage(const char *fileName);
-    void setPos(double x, double y, double angle);
+    bool setKeys(int ind);
+    void initialize(double x, double y, double angle);
     bool render() const;
     void updatePos();
     double getX() const;
@@ -41,6 +41,4 @@ public:
     std::vector<Point> getPolygon() const;
 
     void handleEvent(const SDL_Event &e);
-
-    ~Tank();
 };

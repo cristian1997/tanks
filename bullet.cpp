@@ -17,7 +17,7 @@ Bullet::Bullet(double x, double y, double ang, Point _pivot)
 
 bool Bullet::loadImage(const char fileName[])
 {
-    if (!bulletTexture.loadFromFile(fileName))
+    if (!bulletTexture.loadFromFile(fileName, GD.screenRenderer))
         return false;
 
     width = bulletTexture.getW();
@@ -28,7 +28,7 @@ bool Bullet::loadImage(const char fileName[])
 
 bool Bullet::render() const
 {
-    return bulletTexture.render(pos, angle, &pivot);
+    return bulletTexture.render(GD.screenRenderer, pos, angle, &pivot);
 }
 
 void Bullet::updatePos()
