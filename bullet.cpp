@@ -1,10 +1,9 @@
 #include "bullet.h"
+#include "gamedata.h"
 #include <iostream>
 
 Texture Bullet::bulletTexture;
 int Bullet::width, Bullet::height;
-
-double constexpr PI = M_PI;
 
 Bullet::Bullet(double x, double y, double ang, Point _pivot)
 {
@@ -20,7 +19,7 @@ bool Bullet::loadImage(const char fileName[], SDL_Renderer * renderer)
     return bulletTexture.loadFromFile(fileName, renderer);
 }
 
-bool Bullet::render(SDL_Renderer *& dest)
+bool Bullet::render(SDL_Renderer *& dest) const
 {
     return bulletTexture.render(dest, pos, angle, &pivot);
 }
@@ -43,9 +42,4 @@ double Bullet::getW()
 double Bullet::getH()
 {
     return bulletTexture.getH();
-}
-
-Bullet::~Bullet()
-{
-    
 }

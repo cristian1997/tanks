@@ -1,45 +1,101 @@
 #include "menu.h"
-#include <iostream>
-//#include "level.h"
+#include "gamedata.h"
 
-bool Menu::loadImage(const char *fileName, SDL_Renderer *renderer)
+#include <iostream>
+
+bool Menu::loadMedia()
 {
-	return menuTexture.loadFromFile(fileName, renderer);
+    if (!background.loadFromFile("sprites/menu.jpg", GD.screenRenderer))
+    {
+        return false;
+    }
+
+    buttons.clear();
+
+    SDL_Rect rectForPlay = {GD.SCREEN_WIDTH / 4, GD.SCREEN_HEIGHT / 4, GD.SCREEN_WIDTH / 2 , GD.SCREEN_HEIGHT / 4 - 50};
+    buttons.emplace_back(rectForPlay, GD.GAMEPLAY, "play.png");
+
+    SDL_Rect rectForOptions = {GD.SCREEN_WIDTH / 4, GD.SCREEN_HEIGHT / 4 + GD.SCREEN_HEIGHT / 4 - 49 , GD.SCREEN_WIDTH / 2 , GD.SCREEN_HEIGHT / 4 - 50};
+    //buttons.emplace_back(rectForOptions, GD.OPTIONS, "options.png");
+
+    SDL_Rect rectForExit = {GD.SCREEN_WIDTH / 4, GD.SCREEN_HEIGHT / 4 + GD.SCREEN_HEIGHT / 4 - 50 + GD.SCREEN_HEIGHT / 4 - 48 , GD.SCREEN_WIDTH / 2 , GD.SCREEN_HEIGHT / 4 - 50};
+    //buttons.emplace_back(rectForExit, GD.QUIT, "exit.png");
+
+    return true;
 }
 
-bool Menu::render(SDL_Renderer *&dest)
-{    
+bool Menu::render(SDL_Renderer *&dest) const
+{
+    background.render(dest, Point(0, 0), 0);
 
-	SDL_Rect rectForPlay = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4, SCREEN_WIDTH / 2 , SCREEN_HEIGHT / 4 - 50 };
-	SDL_Rect rectForOptions = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4 + SCREEN_HEIGHT / 4 - 49 , SCREEN_WIDTH / 2 , SCREEN_HEIGHT / 4 - 50 };
-	SDL_Rect rectForExit = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4 + SCREEN_HEIGHT / 4 - 50 + SCREEN_HEIGHT / 4 - 48 , SCREEN_WIDTH / 2 , SCREEN_HEIGHT / 4 - 50 };
-	SDL_SetRenderDrawColor(dest, 0x00, 0xFF, 0x00, 0xFF);
+    for (const auto &b : buttons)
+    {
+        b.render();
+    }
 
-	SDL_RenderFillRect(dest, &rectForPlay);
-	SDL_RenderFillRect(dest, &rectForOptions);
-	SDL_RenderFillRect(dest, &rectForExit);
+    SDL_RenderPresent(GD.screenRenderer);
 
-    return menuTexture.render(dest, Point(0.0, 0.0), 0.0);
+    return true;
 }
 
 GameData::Scene Menu::run()
 {
     render(GD.screenRenderer);
-    SDL_RenderPresent(GD.screenRenderer);
-    std::cout << "menu\n";
+
+    int x, y;
+    bool hadBeenRendered;
     SDL_Event e;
 
     while (true)
     {
+        hadBeenRendered = false;
+        SDL_GetMouseState(&x, &y);
+
         if (SDL_PollEvent(&e))
         {
-            if (e.type == SDL_KEYDOWN)
+            switch (e.type)
             {
-                if (e.key.keysym.sym == SDLK_RETURN)
+                case SDL_QUIT:
+                    return GD.QUIT;
+                    break;
+                case SDL_KEYDOWN:
                 {
-                    return GD.GAMEPLAY;
+                    switch (e.key.keysym.sym)
+                    {
+                        case SDLK_RETURN:
+                            return GD.GAMEPLAY;
+                            break;
+                        case SDLK_ESCAPE:
+                            return GD.QUIT;
+                            break;
+                    }
+                    break;
+                }
+                case SDL_MOUSEBUTTONDOWN:
+                {
+                    for (const auto &b : buttons)
+                    {
+                        if (b.mouseInside())
+                        {
+                            return b.getAction();
+                        }
+                    }
                 }
             }
+        }
+
+        for (auto &b : buttons)
+        {
+            if (b.handleMouseMotion(x, y))
+            {
+                b.render();
+                hadBeenRendered = true;
+            }
+        }
+
+        if (hadBeenRendered)
+        {
+            SDL_RenderPresent(GD.screenRenderer);
         }
     }
 	/*if (!(loadImage(fileName, dest)))
@@ -54,9 +110,9 @@ GameData::Scene Menu::run()
 
 /*int Menu::playerChoiceHandler()
 {
-	SDL_Rect rectForPlay = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4, SCREEN_WIDTH / 2 , SCREEN_HEIGHT / 4 - 50 };
-	SDL_Rect rectForOptions = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4 + SCREEN_HEIGHT / 4 - 49 , SCREEN_WIDTH / 2 , SCREEN_HEIGHT / 4 - 50 };
-	SDL_Rect rectForExit = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4 + SCREEN_HEIGHT / 4 - 50 + SCREEN_HEIGHT / 4 - 48 , SCREEN_WIDTH / 2 , SCREEN_HEIGHT / 4 - 50 };
+	SDL_Rect rectForPlay = { GD.SCREEN_WIDTH / 4, GD.SCREEN_HEIGHT / 4, GD.SCREEN_WIDTH / 2 , GD.SCREEN_HEIGHT / 4 - 50 };
+	SDL_Rect rectForOptions = { GD.SCREEN_WIDTH / 4, GD.SCREEN_HEIGHT / 4 + GD.SCREEN_HEIGHT / 4 - 49 , GD.SCREEN_WIDTH / 2 , GD.SCREEN_HEIGHT / 4 - 50 };
+	SDL_Rect rectForExit = { GD.SCREEN_WIDTH / 4, GD.SCREEN_HEIGHT / 4 + GD.SCREEN_HEIGHT / 4 - 50 + GD.SCREEN_HEIGHT / 4 - 48 , GD.SCREEN_WIDTH / 2 , GD.SCREEN_HEIGHT / 4 - 50 };
 	SDL_Event e;
 	bool ok = 1;
 
@@ -64,7 +120,7 @@ GameData::Scene Menu::run()
 	{   //daca nu merge insemna ca nu ai tinut cont de coordonatele bune , un plus ceva in if-uri rezolva treaba
 		int x, y;
 		SDL_GetMouseState(&x, &y);
-		if (!(x < SCREEN_WIDTH / 4 || y < SCREEN_HEIGHT / 4 || x > SCREEN_WIDTH / 2 || y > SCREEN_HEIGHT / 4 - 50))
+		if (!(x < GD.SCREEN_WIDTH / 4 || y < GD.SCREEN_HEIGHT / 4 || x > GD.SCREEN_WIDTH / 2 || y > GD.SCREEN_HEIGHT / 4 - 50))
 		{
 			SDL_SetRenderDrawColor(dest, 0xFF, 0x00, 0x00, 0xFF);
 			SDL_RenderFillRect(dest, &rectForPlay);
@@ -72,7 +128,7 @@ GameData::Scene Menu::run()
 			while (ok)
 			{
 				SDL_GetMouseState(&x, &y);
-				if (!(x < SCREEN_WIDTH / 4 || y < SCREEN_HEIGHT / 4 || x > SCREEN_WIDTH / 2 || y > SCREEN_HEIGHT / 4 - 50))
+				if (!(x < GD.SCREEN_WIDTH / 4 || y < GD.SCREEN_HEIGHT / 4 || x > GD.SCREEN_WIDTH / 2 || y > GD.SCREEN_HEIGHT / 4 - 50))
 				{
 					ok = 1;
 					if (e.type == SDL_MOUSEBUTTONDOWN)
@@ -89,7 +145,7 @@ GameData::Scene Menu::run()
 
 			}
 		}
-		else if (!(x < SCREEN_WIDTH / 4 || y < SCREEN_HEIGHT / 4 + SCREEN_HEIGHT / 4 - 49 || x > SCREEN_WIDTH / 2 || y > SCREEN_HEIGHT / 4 - 50))
+		else if (!(x < GD.SCREEN_WIDTH / 4 || y < GD.SCREEN_HEIGHT / 4 + GD.SCREEN_HEIGHT / 4 - 49 || x > GD.SCREEN_WIDTH / 2 || y > GD.SCREEN_HEIGHT / 4 - 50))
 		{
 			SDL_SetRenderDrawColor(dest, 0xFF, 0x00, 0x00, 0xFF);
 			SDL_RenderFillRect(dest, &rectForOptions);
@@ -97,7 +153,7 @@ GameData::Scene Menu::run()
 			while (ok)
 			{
 				SDL_GetMouseState(&x, &y);
-				if (!(x < SCREEN_WIDTH / 4 || y < SCREEN_HEIGHT / 4 + SCREEN_HEIGHT / 4 - 49 || x > SCREEN_WIDTH / 2 || y > SCREEN_HEIGHT / 4 - 50))
+				if (!(x < GD.SCREEN_WIDTH / 4 || y < GD.SCREEN_HEIGHT / 4 + GD.SCREEN_HEIGHT / 4 - 49 || x > GD.SCREEN_WIDTH / 2 || y > GD.SCREEN_HEIGHT / 4 - 50))
 				{
 					ok = 1;
 					if (e.type == SDL_MOUSEBUTTONDOWN)
@@ -114,7 +170,7 @@ GameData::Scene Menu::run()
 
 			}
 		}
-		else if (!(x < SCREEN_WIDTH / 4 || y < SCREEN_HEIGHT / 4 + SCREEN_HEIGHT / 4 - 50 + SCREEN_HEIGHT / 4 - 48 || x > SCREEN_WIDTH / 2 || y > SCREEN_HEIGHT / 4 - 50))
+		else if (!(x < GD.SCREEN_WIDTH / 4 || y < GD.SCREEN_HEIGHT / 4 + GD.SCREEN_HEIGHT / 4 - 50 + GD.SCREEN_HEIGHT / 4 - 48 || x > GD.SCREEN_WIDTH / 2 || y > GD.SCREEN_HEIGHT / 4 - 50))
 		{
 			SDL_RenderFillRect(dest, &rectForOptions);
 			SDL_RenderFillRect(dest, &rectForExit);
@@ -122,7 +178,7 @@ GameData::Scene Menu::run()
 			while (ok)
 			{
 				SDL_GetMouseState(&x, &y);
-				if (!(x < SCREEN_WIDTH / 4 || y < SCREEN_HEIGHT / 4 + SCREEN_HEIGHT / 4 - 50 + SCREEN_HEIGHT / 4 - 48 || x > SCREEN_WIDTH / 2 || y > SCREEN_HEIGHT / 4 - 50))
+				if (!(x < GD.SCREEN_WIDTH / 4 || y < GD.SCREEN_HEIGHT / 4 + GD.SCREEN_HEIGHT / 4 - 50 + GD.SCREEN_HEIGHT / 4 - 48 || x > GD.SCREEN_WIDTH / 2 || y > GD.SCREEN_HEIGHT / 4 - 50))
 				{
 					ok = 1;
 					if (e.type == SDL_MOUSEBUTTONDOWN)

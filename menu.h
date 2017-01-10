@@ -1,25 +1,26 @@
 #include "texture.h"
 #include "gamedata.h"
+#include "button.h"
+
 #include <SDL2\SDL.h>
 #include <SDL2\SDL_image.h>
 #include <stdio.h>
-
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+#include <vector>
 
 class Menu
 {
 private:
-	Texture menuTexture;
+	Texture background;
+    std::vector<Button> buttons;
 
-    bool loadImage(const char *fileName, SDL_Renderer *renderer);
-    bool render(SDL_Renderer *&dest);
+    bool render(SDL_Renderer *&dest) const;
 
 public:
 	//GamePlay joc;
 	//Options optiuni;
 
     GameData::Scene run();
+    bool loadMedia();
 	/*bool play();
 	bool options();
 	bool exit();

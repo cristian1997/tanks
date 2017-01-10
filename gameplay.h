@@ -15,7 +15,7 @@ private:
 	Tank player;
     std::vector<Bullet> bullets;
 
-	void openFile(int nrLevel);
+	//void openFile(int nrLevel);
 
 public:
     GameData::Scene run();

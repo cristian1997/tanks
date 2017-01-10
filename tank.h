@@ -18,18 +18,18 @@ private:
 
 public:
     double maxSpeed, maxTurnSpeed;        // pixels per second
+    bool shouldFire;
 
     Tank();
     bool loadImage(const char *fileName, SDL_Renderer *renderer);
     void setPos(double x, double y, double angle);
-    bool render(SDL_Renderer *&dest);
+    bool render(SDL_Renderer *&dest) const;
     void updatePos();
-    double getX();
-    double getY();
-    double getW();
-    double getH();
-    double getAngle();
-    bool fire();
+    double getX() const;
+    double getY() const;
+    double getW() const;
+    double getH() const;
+    double getAngle() const;
 
     void handleEvent(const SDL_Event &e);
 

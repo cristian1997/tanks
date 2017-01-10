@@ -11,8 +11,8 @@ private:
 public:
     Texture() { texture = nullptr; }
     bool loadFromFile(const char fileName[], SDL_Renderer *renderer);
-    bool render(SDL_Renderer *&dest, Point pos, double angle, Point *pivot = nullptr);
-    double getW();
-    double getH();
+    bool render(SDL_Renderer *&dest, Point pos, double angle, const Point *pivot = nullptr) const;
+    double getW() const;
+    double getH() const;
     ~Texture();
 };

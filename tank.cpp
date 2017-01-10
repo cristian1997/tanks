@@ -1,22 +1,19 @@
 #include "tank.h"
+#include "gamedata.h"
+
 #include <iostream>
 #include <cmath>
-
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
-double constexpr PI = M_PI;
 
 
 Tank::Tank()
 {
-    std::cout << "";
     lastMovement = SDL_GetTicks();
     lastFire = -10000;
 
     maxTurnSpeed = 144;
     maxSpeed = 100;
     angle = 0.0;
-    fireRate = 20000000000.0;
+    fireRate = 2.0;
 }
 
 bool Tank::loadImage(const char * fileName, SDL_Renderer *renderer)
@@ -35,9 +32,10 @@ void Tank::setPos(double x, double y, double _angle)
 
     speed = 0;
     turnSpeed = 0;
+    shouldFire = false;
 }
 
-bool Tank::render(SDL_Renderer* &renderer)
+bool Tank::render(SDL_Renderer* &renderer) const
 {
     return tankTexture.render(renderer, pos, angle);
 }
@@ -50,52 +48,39 @@ void Tank::updatePos()
     pos.y += speed * (time - lastMovement) * sin(angle / 180.0 * PI) / 1000.0;
 
     if (pos.x < 0) pos.x = 0;
-    if (pos.x + width > SCREEN_WIDTH) pos.x = SCREEN_WIDTH - width;
+    if (pos.x + width > GD.SCREEN_WIDTH) pos.x = GD.SCREEN_WIDTH - width;
 
     if (pos.y < 0) pos.y = 0;
-    if (pos.y + height > SCREEN_HEIGHT) pos.y = SCREEN_HEIGHT - height;
+    if (pos.y + height > GD.SCREEN_HEIGHT) pos.y = GD.SCREEN_HEIGHT - height;
 
     angle += turnSpeed * (time - lastMovement) / 1000.0;
 
     lastMovement = time;
 }
 
-double Tank::getX()
+double Tank::getX() const
 {
     return pos.x;
 }
 
-double Tank::getY()
+double Tank::getY() const
 {
     return pos.y;
 }
 
-double Tank::getW()
+double Tank::getW() const
 {
     return tankTexture.getW();
 }
 
-double Tank::getH()
+double Tank::getH() const
 {
     return tankTexture.getH();
 }
 
-double Tank::getAngle()
+double Tank::getAngle() const
 {
     return angle;
-}
-
-bool Tank::fire()
-{
-    int time = SDL_GetTicks();
-
-    if (time - lastFire > 1000.0 / fireRate)
-    {
-        lastFire = time;
-        return true;
-    }
-
-    return false;
 }
 
 void Tank::handleEvent(const SDL_Event &e)
@@ -109,6 +94,18 @@ void Tank::handleEvent(const SDL_Event &e)
                 case SDLK_DOWN: speed = -maxSpeed; break;
                 case SDLK_LEFT: turnSpeed = -maxTurnSpeed; break;
                 case SDLK_RIGHT: turnSpeed = maxTurnSpeed; break;
+                case SDLK_SPACE:
+                {
+                    int time = SDL_GetTicks();
+
+                    if (time - lastFire > 1000.0 / fireRate)
+                    {
+                        lastFire = time;
+                        shouldFire = true;
+                    }
+
+                    break;
+                }
             }
             break;
         
