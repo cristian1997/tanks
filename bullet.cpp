@@ -14,14 +14,18 @@ Bullet::Bullet(double x, double y, double ang, Point _pivot)
     lastMovement = SDL_GetTicks();
 }
 
-bool Bullet::loadImage(const char fileName[], SDL_Renderer * renderer)
+bool Bullet::loadImage(const char fileName[])
 {
-    return bulletTexture.loadFromFile(fileName, renderer);
+    if (!bulletTexture.loadFromFile(fileName))
+        return false;
+
+    width = bulletTexture.getW();
+    height = bulletTexture.getH();
 }
 
-bool Bullet::render(SDL_Renderer *& dest) const
+bool Bullet::render() const
 {
-    return bulletTexture.render(dest, pos, angle, &pivot);
+    return bulletTexture.render(pos, angle, &pivot);
 }
 
 void Bullet::updatePos()
@@ -42,4 +46,24 @@ double Bullet::getW()
 double Bullet::getH()
 {
     return bulletTexture.getH();
+}
+
+std::vector<Point> Bullet::getPolygon() const
+{
+    Point pivot(pos.x + width / 2, pos.y + height / 2), p;
+    std::vector<Point> ret;
+
+    p = pos;
+    ret.push_back(Geometry::rotatePoint(p, pivot, angle));
+
+    p = pos; p.x += width;
+    ret.push_back(Geometry::rotatePoint(p, pivot, angle));
+
+    p = pos; p.y += height;
+    ret.push_back(Geometry::rotatePoint(p, pivot, angle));
+
+    p = pos; p.x += width; p.y += height;
+    ret.push_back(Geometry::rotatePoint(p, pivot, angle));
+
+    return ret;
 }

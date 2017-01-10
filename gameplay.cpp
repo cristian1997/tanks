@@ -10,26 +10,25 @@
 
 GameData::Scene GamePlay::run()
 {
-    std::cout << "Gameplay\n";
     //openFile(nrLevel);
 
     int frames;
 
-    if (!player.loadImage("sprites/blue tank.png", GD.screenRenderer))
+    if (!player.loadImage("sprites/blue tank.png"))
     {
         printf("Unable to load image sprites/blue tank.png! SDL Error: %s\n", SDL_GetError());
         return GD.QUIT;
     }
 
-    tt.loadImage("sprites/blue tank.png", GD.screenRenderer);
+    tt.loadImage("sprites/blue tank.png");
 
     player.setPos(10, 10, 0.0);
     tt.setPos(100, 100, 0.0);
 
-    if (!player.render(GD.screenRenderer))
+    if (!player.render())
         printf("Error rendering player\n");
 
-    if (!tt.render(GD.screenRenderer))
+    if (!tt.render())
     {
         printf("tt\n");
         return GD.QUIT;
@@ -75,14 +74,14 @@ GameData::Scene GamePlay::run()
         SDL_RenderClear(GD.screenRenderer);
 
         player.updatePos();
-        if (!player.render(GD.screenRenderer))
+        if (!player.render())
         {
             printf("Error rendering player\n%s\n", SDL_GetError());
             return GD.QUIT;
         }
 
         tt.updatePos();
-        if (!tt.render(GD.screenRenderer))
+        if (!tt.render())
         {
             printf("Error rendering player\n%s\n", SDL_GetError());
             return GD.QUIT;
@@ -91,7 +90,7 @@ GameData::Scene GamePlay::run()
         for (auto b : bullets)
         {
             b.updatePos();
-            if (!b.render(GD.screenRenderer))
+            if (!b.render())
             {
                 printf("Error rendering bullet\n%s\n", SDL_GetError());
                 return GD.QUIT;

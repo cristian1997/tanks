@@ -11,13 +11,13 @@ Button::Button(SDL_Rect _pos, GameData::Scene _action, const char fileName[])
     std::string s;
     
     s = std::string("sprites/default") + fileName;
-    if (!defaultTexture.loadFromFile(s.c_str(), GD.screenRenderer))
+    if (!defaultTexture.loadFromFile(s.c_str()))
     {
         printf("Couldn't load %s!", s.c_str());
     }
 
     s = std::string("sprites/hover") + fileName;
-    if (!hoverTexture.loadFromFile(s.c_str(), GD.screenRenderer))
+    if (!hoverTexture.loadFromFile(s.c_str()))
     {
         printf("Couldn't load %s!", s.c_str());
     }
@@ -27,14 +27,14 @@ bool Button::render() const
 {
     if (isMouseInside)
     {
-        if (!hoverTexture.render(GD.screenRenderer, Point(pos.x, pos.y), 0))
+        if (!hoverTexture.render(Point(pos.x, pos.y), 0))
         {
             printf("Couldn't render\n");
         }
     }
     else
     {
-        if (!defaultTexture.render(GD.screenRenderer, Point(pos.x, pos.y), 0))
+        if (!defaultTexture.render(Point(pos.x, pos.y), 0))
         {
             printf("Couldn't render\n%s\n", SDL_GetError());
         }

@@ -47,7 +47,7 @@ bool loadMedia()
         return false;
     }
 
-    if (!Bullet::loadImage("sprites/bullet.png", GD.screenRenderer))
+    if (!Bullet::loadImage("sprites/bullet.png"))
     {
         printf("Unable to load image sprites/bullet.png! SDL Error: %s\n", SDL_GetError());
         return false;

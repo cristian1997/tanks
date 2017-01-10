@@ -13,7 +13,7 @@ private:
 	Texture background;
     std::vector<Button> buttons;
 
-    bool render(SDL_Renderer *&dest) const;
+    bool render() const;
 
 public:
 	//GamePlay joc;
