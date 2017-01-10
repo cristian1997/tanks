@@ -37,12 +37,12 @@ bool Texture::render(Point pos, double angle, const Point *pivot) const
     return true;
 }
 
-double Texture::getW() const
+int Texture::getW() const
 {
     return width;
 }
 
-double Texture::getH() const
+int Texture::getH() const
 {
     return height;
 }

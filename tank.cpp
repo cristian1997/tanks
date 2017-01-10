@@ -42,6 +42,8 @@ bool Tank::loadImage(const char * fileName)
 
     width = tankTexture.getW();
     height = tankTexture.getH();
+
+    return true;
 }
 
 void Tank::setPos(double x, double y, double _angle)
@@ -117,10 +119,10 @@ std::vector<Point> Tank::getPolygon() const
     p = pos; p.x += width;
     ret.push_back(Geometry::rotatePoint(p, pivot, angle));
 
-    p = pos; p.y += height;
+    p = pos; p.x += width; p.y += height;
     ret.push_back(Geometry::rotatePoint(p, pivot, angle));
 
-    p = pos; p.x += width; p.y += height;
+    p = pos; p.y += height;
     ret.push_back(Geometry::rotatePoint(p, pivot, angle));
 
     return ret;
@@ -146,15 +148,6 @@ void Tank::handleEvent(const SDL_Event &e)
                     lastFire = time;
                     shouldFire = true;
                 }
-            }
-            else if (sym == SDLK_0)
-            {
-                for (auto p : getPolygon())
-                {
-                    std::cout << p.x << ' ' << p.y << '\n';
-                }
-
-                std::cout << "\n\n";
             }
             break;
         

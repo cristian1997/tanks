@@ -21,6 +21,8 @@ bool Bullet::loadImage(const char fileName[])
 
     width = bulletTexture.getW();
     height = bulletTexture.getH();
+
+    return true;
 }
 
 bool Bullet::render() const
@@ -50,7 +52,7 @@ double Bullet::getH()
 
 std::vector<Point> Bullet::getPolygon() const
 {
-    Point pivot(pos.x + width / 2, pos.y + height / 2), p;
+    Point pivot(pos.x, pos.y), p;
     std::vector<Point> ret;
 
     p = pos;
@@ -59,10 +61,10 @@ std::vector<Point> Bullet::getPolygon() const
     p = pos; p.x += width;
     ret.push_back(Geometry::rotatePoint(p, pivot, angle));
 
-    p = pos; p.y += height;
+    p = pos; p.x += width; p.y += height;
     ret.push_back(Geometry::rotatePoint(p, pivot, angle));
 
-    p = pos; p.x += width; p.y += height;
+    p = pos; p.y += height;
     ret.push_back(Geometry::rotatePoint(p, pivot, angle));
 
     return ret;

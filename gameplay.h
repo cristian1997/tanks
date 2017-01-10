@@ -16,6 +16,10 @@ private:
     std::vector<Bullet> bullets;
 
 	//void openFile(int nrLevel);
+    bool loadMedia();
+    void updatePos();
+    bool render();
+    bool checkCollisions();
 
 public:
     GameData::Scene run();

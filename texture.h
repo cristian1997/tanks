@@ -14,7 +14,7 @@ public:
     Texture() { texture = nullptr; }
     bool loadFromFile(const char fileName[]);
     bool render(Point pos, double angle, const Point *pivot = nullptr) const;
-    double getW() const;
-    double getH() const;
+    int getW() const;
+    int getH() const;
     ~Texture();
 };
