@@ -1,9 +1,10 @@
 #pragma once
+#include "texture.h"
+#include "geometry.h"
 
 #include <SDL2\SDL.h>
 #include <SDL2\SDL_image.h>
-#include "texture.h"
-#include "geometry.h"
+#include <vector>
 
 class Bullet
 {
@@ -18,9 +19,10 @@ private:
 public:
 
     Bullet(double x, double y, double ang, Point _pivot);
-    static bool loadImage(const char fileName[], SDL_Renderer *renderer);
-    bool render(SDL_Renderer *&dest) const;
+    static bool loadImage(const char fileName[]);
+    bool render() const;
     void updatePos();
     static double getW();
     static double getH();
+    std::vector<Point> getPolygon() const;
 };

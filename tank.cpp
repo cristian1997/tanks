@@ -1,9 +1,22 @@
 #include "tank.h"
-#include "gamedata.h"
 
 #include <iostream>
-#include <cmath>
 
+
+bool Tank::outOfScreen() const
+{
+    double xmin = GD.SCREEN_WIDTH, xmax = -1, ymin = GD.SCREEN_HEIGHT, ymax = -1;
+
+    for (const auto p : getPolygon())
+    {
+        xmin = std::min(xmin, p.x);
+        xmax = std::max(xmax, p.x);
+        ymin = std::min(ymin, p.y);
+        ymax = std::max(ymax, p.y);
+    }
+
+    return !(0 <= xmin && xmax < GD.SCREEN_WIDTH && 0 <= ymin && ymax < GD.SCREEN_HEIGHT);
+}
 
 Tank::Tank()
 {
@@ -22,9 +35,13 @@ Tank::Tank()
     keys[std::string("fire")] = SDLK_SPACE;
 }
 
-bool Tank::loadImage(const char * fileName, SDL_Renderer *renderer)
+bool Tank::loadImage(const char * fileName)
 {
-    return tankTexture.loadFromFile(fileName, renderer);
+    if (!tankTexture.loadFromFile(fileName))
+        return false;
+
+    width = tankTexture.getW();
+    height = tankTexture.getH();
 }
 
 void Tank::setPos(double x, double y, double _angle)
@@ -41,25 +58,25 @@ void Tank::setPos(double x, double y, double _angle)
     shouldFire = false;
 }
 
-bool Tank::render(SDL_Renderer* &renderer) const
+bool Tank::render() const
 {
-    return tankTexture.render(renderer, pos, angle);
+    return tankTexture.render(pos, angle);
 }
 
 void Tank::updatePos()
 {
     int time = SDL_GetTicks();
+    Point prevPos = pos;
+    double prevAngle = angle;
 
     pos.x += speed * (time - lastMovement) * cos(angle / 180.0 * PI) / 1000.0;
     pos.y += speed * (time - lastMovement) * sin(angle / 180.0 * PI) / 1000.0;
 
-    if (pos.x < 0) pos.x = 0;
-    if (pos.x + width > GD.SCREEN_WIDTH) pos.x = GD.SCREEN_WIDTH - width;
-
-    if (pos.y < 0) pos.y = 0;
-    if (pos.y + height > GD.SCREEN_HEIGHT) pos.y = GD.SCREEN_HEIGHT - height;
-
     angle += turnSpeed * (time - lastMovement) / 1000.0;
+    if (angle >= 360.0) angle -= 360.0;
+    if (angle < 0) angle += 360.0;
+
+    if (outOfScreen()) pos = prevPos, angle = prevAngle;
 
     lastMovement = time;
 }
@@ -76,17 +93,37 @@ double Tank::getY() const
 
 double Tank::getW() const
 {
-    return tankTexture.getW();
+    return height;
 }
 
 double Tank::getH() const
 {
-    return tankTexture.getH();
+    return width;
 }
 
 double Tank::getAngle() const
 {
     return angle;
+}
+
+std::vector<Point> Tank::getPolygon() const
+{
+    Point pivot(pos.x + width / 2, pos.y + height / 2), p;
+    std::vector<Point> ret;
+
+    p = pos;
+    ret.push_back(Geometry::rotatePoint(p, pivot, angle));
+
+    p = pos; p.x += width;
+    ret.push_back(Geometry::rotatePoint(p, pivot, angle));
+
+    p = pos; p.y += height;
+    ret.push_back(Geometry::rotatePoint(p, pivot, angle));
+
+    p = pos; p.x += width; p.y += height;
+    ret.push_back(Geometry::rotatePoint(p, pivot, angle));
+
+    return ret;
 }
 
 void Tank::handleEvent(const SDL_Event &e)
@@ -109,6 +146,15 @@ void Tank::handleEvent(const SDL_Event &e)
                     lastFire = time;
                     shouldFire = true;
                 }
+            }
+            else if (sym == SDLK_0)
+            {
+                for (auto p : getPolygon())
+                {
+                    std::cout << p.x << ' ' << p.y << '\n';
+                }
+
+                std::cout << "\n\n";
             }
             break;
         

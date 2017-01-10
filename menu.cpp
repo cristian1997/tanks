@@ -1,11 +1,10 @@
 #include "menu.h"
-#include "gamedata.h"
 
 #include <iostream>
 
 bool Menu::loadMedia()
 {
-    if (!background.loadFromFile("sprites/menu.jpg", GD.screenRenderer))
+    if (!background.loadFromFile("sprites/menu.jpg"))
     {
         return false;
     }
@@ -24,9 +23,9 @@ bool Menu::loadMedia()
     return true;
 }
 
-bool Menu::render(SDL_Renderer *&dest) const
+bool Menu::render() const
 {
-    background.render(dest, Point(0, 0), 0);
+    background.render(Point(0, 0), 0);
 
     for (const auto &b : buttons)
     {
@@ -40,7 +39,7 @@ bool Menu::render(SDL_Renderer *&dest) const
 
 GameData::Scene Menu::run()
 {
-    render(GD.screenRenderer);
+    render();
 
     int x, y;
     bool hadBeenRendered;
