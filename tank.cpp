@@ -14,6 +14,12 @@ Tank::Tank()
     maxSpeed = 100;
     angle = 0.0;
     fireRate = 2.0;
+
+    keys[std::string("up")] = SDLK_UP;
+    keys[std::string("down")] = SDLK_DOWN;
+    keys[std::string("left")] = SDLK_LEFT;
+    keys[std::string("right")] = SDLK_RIGHT;
+    keys[std::string("fire")] = SDLK_SPACE;
 }
 
 bool Tank::loadImage(const char * fileName, SDL_Renderer *renderer)
@@ -85,38 +91,32 @@ double Tank::getAngle() const
 
 void Tank::handleEvent(const SDL_Event &e)
 {
+    auto sym = e.key.keysym.sym;
+
     switch (e.type)
     {
         case SDL_KEYDOWN:
-            switch (e.key.keysym.sym)
+            if (sym == keys[std::string("up")]) speed = maxSpeed;
+            else if (sym == keys[std::string("down")]) speed = -maxSpeed;
+            else if (sym == keys[std::string("left")]) turnSpeed = -maxTurnSpeed;
+            else if (sym == keys[std::string("right")]) turnSpeed = maxTurnSpeed;
+            else if (sym == keys[std::string("fire")])
             {
-                case SDLK_UP: speed = maxSpeed; break;
-                case SDLK_DOWN: speed = -maxSpeed; break;
-                case SDLK_LEFT: turnSpeed = -maxTurnSpeed; break;
-                case SDLK_RIGHT: turnSpeed = maxTurnSpeed; break;
-                case SDLK_SPACE:
+                int time = SDL_GetTicks();
+
+                if (time - lastFire > 1000.0 / fireRate)
                 {
-                    int time = SDL_GetTicks();
-
-                    if (time - lastFire > 1000.0 / fireRate)
-                    {
-                        lastFire = time;
-                        shouldFire = true;
-                    }
-
-                    break;
+                    lastFire = time;
+                    shouldFire = true;
                 }
             }
             break;
         
         case SDL_KEYUP:
-            switch (e.key.keysym.sym)
-            {
-                case SDLK_UP: if (speed > 0) speed = 0; break;
-                case SDLK_DOWN: if (speed < 0) speed = 0; break;
-                case SDLK_LEFT: if (turnSpeed < 0) turnSpeed = 0; break;
-                case SDLK_RIGHT: if (turnSpeed > 0) turnSpeed = 0; break;
-            }
+            if (sym == keys[std::string("up")]) { if (speed > 0) speed = 0; }
+            else if (sym == keys[std::string("down")]) { if (speed < 0) speed = 0; }
+            else if (sym == keys[std::string("left")]) { if (turnSpeed < 0) turnSpeed = 0; }
+            else if (sym == keys[std::string("right")]) { if (turnSpeed > 0) turnSpeed = 0; }
             break;
     }
 }

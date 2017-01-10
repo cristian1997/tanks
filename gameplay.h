@@ -12,7 +12,7 @@
 class GamePlay 
 {
 private:
-	Tank player;
+	Tank player, tt;
     std::vector<Bullet> bullets;
 
 	//void openFile(int nrLevel);

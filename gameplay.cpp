@@ -21,12 +21,21 @@ GameData::Scene GamePlay::run()
         return GD.QUIT;
     }
 
+    tt.loadImage("sprites/blue tank.png", GD.screenRenderer);
+
     player.setPos(10, 10, 0.0);
+    tt.setPos(100, 100, 0.0);
 
     if (!player.render(GD.screenRenderer))
         printf("Error rendering player\n");
 
-    SDL_UpdateWindowSurface(GD.window);
+    if (!tt.render(GD.screenRenderer))
+    {
+        printf("tt\n");
+        return GD.QUIT;
+    }
+
+    SDL_RenderPresent(GD.screenRenderer);
 
     bool quit = false;
     SDL_Event e;
@@ -36,6 +45,7 @@ GameData::Scene GamePlay::run()
     while (!quit)
     {
         player.shouldFire = false;
+        tt.shouldFire = false;
 
         while (SDL_PollEvent(&e))
         {
@@ -47,7 +57,7 @@ GameData::Scene GamePlay::run()
             {
                 return GD.MENU;
             }
-            else player.handleEvent(e);
+            else player.handleEvent(e), tt.handleEvent(e);
         }
 
         if (player.shouldFire)
@@ -66,6 +76,13 @@ GameData::Scene GamePlay::run()
 
         player.updatePos();
         if (!player.render(GD.screenRenderer))
+        {
+            printf("Error rendering player\n%s\n", SDL_GetError());
+            return GD.QUIT;
+        }
+
+        tt.updatePos();
+        if (!tt.render(GD.screenRenderer))
         {
             printf("Error rendering player\n%s\n", SDL_GetError());
             return GD.QUIT;
