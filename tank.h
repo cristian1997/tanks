@@ -1,9 +1,11 @@
 #pragma once
 
-#include <SDL2\SDL.h>
-#include <SDL2\SDL_image.h>
 #include "texture.h"
 
+#include <SDL2\SDL.h>
+#include <SDL2\SDL_image.h>
+#include <map>
+#include <string>
 
 class Tank
 {
@@ -15,6 +17,7 @@ private:
     double angle;
     double speed, turnSpeed;
     double fireRate; // rounds per second
+    std::map<std::string, decltype(SDLK_0)> keys;
 
 public:
     double maxSpeed, maxTurnSpeed;        // pixels per second
