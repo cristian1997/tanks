@@ -44,6 +44,15 @@ bool GamePlay::render()
         }
     }
 
+    for (const auto &p : powerUps)
+    {
+        if (!p.render())
+        {
+            printf("Error rendering\n%s\n", SDL_GetError());
+            return false;
+        }
+    }
+
     SDL_RenderPresent(GD.screenRenderer);
 
     return true;
@@ -69,10 +78,21 @@ bool GamePlay::checkCollisions()
 
         for (int j = i + 1; j < nrTanks; ++j)
         {
+            if (tanks[i].isDestroyed || tanks[j].isDestroyed) continue;
+
             if (Geometry::intersect(polys[i], polys[j]))
             {
                 tanks[i].isAllowed = false;
                 tanks[j].isAllowed = false;
+            }
+        }
+
+        for (auto &p : powerUps)
+        {
+            if (Geometry::intersect(polys[i], p.getPolygon()))
+            {
+                p.isDestroyed = true;
+                // tanks[i] get powerUp
             }
         }
     }
@@ -82,7 +102,6 @@ bool GamePlay::checkCollisions()
 
 GameData::Scene GamePlay::run()
 {
-    //openFile(nrLevel);
     nrTanks = 2;
     tanks.resize(2);
 
@@ -138,10 +157,8 @@ GameData::Scene GamePlay::run()
         checkCollisions();
         updatePos();
 
-        bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
-            [](Bullet b) -> bool { return b.isDestroyed; }),
-            bullets.end()
-        );
+        eraseDestroyed(bullets);
+        eraseDestroyed(powerUps);
 
         if (!render()) return GD.QUIT;
 
@@ -156,4 +173,13 @@ GameData::Scene GamePlay::run()
     }
 
     return GD.QUIT;
+}
+
+template<class T>
+inline void GamePlay::eraseDestroyed(std::vector<T> &objects)
+{
+    objects.erase(std::remove_if(objects.begin(), objects.end(),
+        [](T o) -> bool { return o.isDestroyed; }),
+        objects.end()
+    );
 }

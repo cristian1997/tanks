@@ -14,6 +14,8 @@ private:
     std::vector<Point> poly;
 
 public:
+    bool isDestroyed;
+
     PowerUp(int x, int y, GameData::PowerUps _type);
     bool render() const;
     GameData::PowerUps getType() const;

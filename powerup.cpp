@@ -8,6 +8,8 @@ PowerUp::PowerUp(int x, int y, GameData::PowerUps _type)
     pos.y = y;
     type = _type;
 
+    isDestroyed = false;
+
     poly.emplace_back(x, y);
     poly.emplace_back(x + width, y);
     poly.emplace_back(x + width, y + height);

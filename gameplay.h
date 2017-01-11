@@ -4,6 +4,7 @@
 #include "level.h"
 #include "geometry.h"
 #include "gamedata.h"
+#include "powerup.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -17,13 +18,16 @@ private:
     std::vector<Tank> tanks;
     //Map map;
     std::vector<Bullet> bullets;
+    std::vector<PowerUp> powerUps;
 
-	//void openFile(int nrLevel);
     bool loadMedia();
     void applyPhysics();
     void updatePos();
     bool render();
     bool checkCollisions();
+    
+    template<class T>
+    void eraseDestroyed(std::vector<T> &objects);
 
 public:
     GameData::Scene run();
