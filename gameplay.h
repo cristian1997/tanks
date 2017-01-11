@@ -13,7 +13,9 @@
 class GamePlay 
 {
 private:
-	Tank player, tt;
+    int nrTanks;
+    std::vector<Tank> tanks;
+    //Map map;
     std::vector<Bullet> bullets;
 
 	//void openFile(int nrLevel);

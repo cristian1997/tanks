@@ -13,7 +13,7 @@ public:
     const int SCREEN_WIDTH = 800;
     const int SCREEN_HEIGHT = 600;
 
-    const int nrMaxTanks = 4;
+    static const int nrMaxTanks = 4;
 
     enum Scene
     {
@@ -29,7 +29,7 @@ public:
     int nrTanks;
 
     Texture *playerText;
-    std::map<std::string, decltype(SDLK_0)> keys[4];
+    std::map<std::string, decltype(SDLK_0)> keys[nrMaxTanks];
 };
 
 extern GameData GD;
