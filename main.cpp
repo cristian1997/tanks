@@ -2,8 +2,8 @@
 #include "gamedata.h"
 #include "gameplay.h"
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include <SDL.h>
+#include <SDL_image.h>
 #include <vector>
 #include <stdio.h>
 
@@ -103,9 +103,12 @@ int main(int argc, char* args[])
                         quit = true;
                         break;
                     case GD.GAMEPLAY:
-                        currentScene = gamePlay.run();
-                        break;
-                    case GD.QUIT:
+					{
+						GD.nrLevel = 0;
+						currentScene = gamePlay.run();
+						break;
+					}
+					case GD.QUIT:
                         quit = true;
                         break;
                 }

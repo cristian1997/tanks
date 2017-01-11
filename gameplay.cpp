@@ -10,30 +10,50 @@
 
 bool GamePlay::loadMedia()
 {
-    for(int i = 0;  i<nrTanks; ++i) tanks[i].tankTexture = GD.playerText;
+    /*if (!player.loadImage("sprites/blue tank.png"))
+    {
+        printf("Unable to load image sprites/blue tank.png! SDL Error: %s\n", SDL_GetError());
+        return false;
+    }*/
+
+    player.tankTexture = GD.playerText;
+    tt.tankTexture = GD.playerText;
+
+    /*if (!tt.loadImage("sprites/blue tank.png"))
+    {
+        printf("Unable to load image sprites/blue tank.png! SDL Error: %s\n", SDL_GetError());
+        return false;
+    }*/
 
     return true;
 }
 
 void GamePlay::updatePos()
 {
-    for (auto &t : tanks) t.updatePos();
-    for (auto &b : bullets) b.updatePos();
+    player.updatePos();
+
+    tt.updatePos();
+
+    for (auto &b : bullets)
+    {
+        b.updatePos();
+    }
 }
 
 bool GamePlay::render()
 {
     SDL_RenderClear(GD.screenRenderer);
 
-    //map.render();
-
-    for (const auto &t : tanks)
+    if (!player.isDestroyed && !player.render())
     {
-        if (!t.isDestroyed && !t.render())
-        {
-            printf("Error rendering tank\n%s\n", SDL_GetError());
-            return false;
-        }
+        printf("Error rendering player\n%s\n", SDL_GetError());
+        return false;
+    }
+
+    if (!tt.isDestroyed && !tt.render())
+    {
+        printf("Error rendering player\n%s\n", SDL_GetError());
+        return false;
     }
 
     for (auto &b : bullets)
@@ -52,21 +72,25 @@ bool GamePlay::render()
 
 bool GamePlay::checkCollisions()
 {
-    std::vector<std::vector<Point>> polys;
-    for (const auto &t : tanks) polys.push_back(t.getPolygon());
+    auto playerPoly = player.getPolygon();
+    auto ttPoly = tt.getPolygon();
 
-    for (int i = 0; i < nrTanks; ++i)
+    for (auto &b : bullets)
     {
-        for (auto &b : bullets)
-        {
-            auto bulletPoly = b.getPolygon();
+        auto bulletPoly = b.getPolygon();
 
-            if (!tanks[i].isDestroyed && Geometry::intersect(polys[i], bulletPoly))
-            {
-                tanks[i].isDestroyed = true;
-                b.isDestroyed = true;
-            }
-        }
+		if (!player.isDestroyed && Geometry::intersect(playerPoly, bulletPoly))
+			player.isDestroyed = true,
+		    b.isDestroyed = true,
+            std::cout << "Player hit\n";
+
+		if (!tt.isDestroyed && Geometry::intersect(ttPoly, bulletPoly))
+		{
+			tt.isDestroyed = true,
+			nrEnemyTanks--;
+		}
+		    b.isDestroyed = true,
+            std::cout << "Enemy hit\n";
     }
 
     return false;
@@ -74,81 +98,90 @@ bool GamePlay::checkCollisions()
 
 GameData::Scene GamePlay::run()
 {
-    //openFile(nrLevel);
-    nrTanks = 2;
-    tanks.resize(2);
+	int frames;
+	int start;
+	bool quit;
+	SDL_Event e;
 
-    if (!loadMedia()) return GD.QUIT;
+	while (continuePlay)
+	{
 
-    tanks[0].initialize(20, 20, 0);
-    tanks[1].initialize(200, 200, 0);
+		openLevel(GD.nrLevel);
 
-    for (int i = 0; i < nrTanks; ++i) tanks[i].setKeys(i);
+		if (!loadMedia()) return GD.QUIT;
 
-    if (!render()) return GD.QUIT;
+		player.initialize(getStartPozX(), getStartPozY(), 0.0);
+		tt.initialize(500, 60, 0.0);
 
-    bool quit = false;
-    SDL_Event e;
-    int frames = 0;
-    int start = SDL_GetTicks();
+		player.setKeys(0);
+		tt.setKeys(1);
 
-    while (!quit)
-    {
-        for (auto &t : tanks) t.shouldFire = false;
+		if (!render()) return GD.QUIT;
 
-        while (SDL_PollEvent(&e))
-        {
-            if (e.type == SDL_QUIT)
-            {
-                quit = true;
-            }
-            else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)
-            {
-                return GD.MENU;
-            }
-            else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_1)
-            {
-                bullets.clear();
-            }
-            else
-            {
-                for (auto &t : tanks) t.handleEvent(e);
-            }
-        }
+		quit = false;
+		
+		frames = 0;
+	    start = SDL_GetTicks();
 
-        for(const auto &t : tanks)
-        {
-            if (!t.shouldFire) continue;
+		while (!quit)
+		{
+			player.shouldFire = false;
+			tt.shouldFire = false;
 
-            double x = t.getX() + t.getW() + 5.0;
-            double y = t.getY() + (t.getH() - Bullet::getH()) / 2.0;
-            double x0 = t.getX() + t.getW() / 2;
-            double y0 = t.getY() + t.getH() / 2;
+			while (SDL_PollEvent(&e))
+			{
+				if (e.type == SDL_QUIT)
+				{
+					continuePlay = false;
+					quit = true;
+				}
+				else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)
+				{
+					continuePlay = false;
+					return GD.MENU;
+				}
+				else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_0)
+				{
+					for (auto p : tt.getPolygon()) std::cout << p.x << ' ' << p.y << '\n';
+					std::cout << '\n';
+					for (auto p : bullets[0].getPolygon()) std::cout << p.x << ' ' << p.y << '\n';
+				}
+				else player.handleEvent(e), tt.handleEvent(e);
+			}
 
-            Point ret = Geometry::rotatePoint(Point(x, y), Point(x0, y0), t.getAngle());
-            Bullet bullet(ret.x, ret.y, t.getAngle(), Point(0, 0));
-            bullets.push_back(bullet);
-        }
+			if (player.shouldFire)
+			{
+				double x = player.getX() + player.getW() + 5.0;
+				double y = player.getY() + (player.getH() - Bullet::getH()) / 2.0;
+				double x0 = player.getX() + player.getW() / 2;
+				double y0 = player.getY() + player.getH() / 2;
 
-        updatePos();
-        checkCollisions();
+				Point ret = Geometry::rotatePoint(Point(x, y), Point(x0, y0), player.getAngle());
+				Bullet bullet(ret.x, ret.y, player.getAngle(), Point(0, 0));
+				bullets.push_back(bullet);
+			}
 
-        bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
-            [](Bullet b) -> bool { return b.isDestroyed; }),
-            bullets.end()
-        );
+			updatePos();
+			checkCollisions();
 
-        if (!render()) return GD.QUIT;
+			bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
+				[](Bullet b) -> bool {return b.isDestroyed; }),
+				bullets.end()
+			);
 
-        ++frames;
+			if (!render()) return GD.QUIT;
 
-        if (SDL_GetTicks() - start >= 1000)
-        {
-            //printf("%d\n", frames);
-            frames = 0;
-            start = SDL_GetTicks();
-        }
-    }
+			++frames;
 
+			if (SDL_GetTicks() - start >= 1000)
+			{
+				//printf("%d\n", frames);
+				frames = 0;
+				start = SDL_GetTicks();
+			}
+		}
+		if (nrEnemyTanks == 0)
+			GD.nrLevel++;
+	}
     return GD.QUIT;
 }

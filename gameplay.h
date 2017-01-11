@@ -5,25 +5,23 @@
 #include "geometry.h"
 #include "gamedata.h"
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include <SDL.h>
+#include <SDL_image.h>
 #include <vector>
 #include <algorithm>
 
 class GamePlay 
 {
 private:
-    int nrTanks;
-    std::vector<Tank> tanks;
-    //Map map;
+	Tank player, tt;
     std::vector<Bullet> bullets;
 
-	//void openFile(int nrLevel);
     bool loadMedia();
     void updatePos();
     bool render();
     bool checkCollisions();
 
 public:
+	bool continuePlay = true;
     GameData::Scene run();
 };

@@ -3,7 +3,7 @@
 #include "gamedata.h"
 #include "texture.h"
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 class Button
 {

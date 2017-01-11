@@ -1,25 +1,21 @@
 #include "map.h"
 
-void map::run(int textureTypeVector[64*48])
+void map::loadMap()
 {
-	int x,y;
-	char s;
+	int x,y,i=0;
 	int xPos = 0, yPos = 0;
 
-	for (y = 0; y < 48; y++)
+	for (y = 0; y < GD.SCREEN_WIDTH/25; y++)
 	{   
-		for (x = 0; x < 64; x++)
-		{   //modifica tu te rog de aici 
-			s = textureTypeVector[i];
-			mapTexture.loadFromFile(s, screenRenderer);
-			//pana aici
-			mapTexture.render(screenRendere, xPos, yPos, 0);
-			xPos = xPos + 10;
-			SDL_RenderPresent(screenRenderer);
+		for (x = 0; x < GD.SCREEN_HEIGHT/25; x++)
+		{   			
+			mapTexture.loadFromFile(std::to_string(GD.mapTextureTypeVector[i]).c_str(), GD.screenRenderer);
+			mapTexture.render(GD.screenRenderer, xPos, yPos, 0);
+			xPos = xPos + 25;
+			SDL_RenderPresent(GD.screenRenderer);
 			i++;
 		}
 		xPos = 0;
-		yPos = yPos + 10;
+		yPos = yPos + 25;
     }
 }
-// vectorul e de 64*48, deoarece am considerat fiecare patratica din mapa ca fiind de 10 lungime, pe 10 pixeli latime 
