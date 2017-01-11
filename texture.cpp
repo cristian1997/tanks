@@ -37,6 +37,13 @@ bool Texture::render(SDL_Renderer *&dest, Point pos, double angle, const Point *
     return true;
 }
 
+bool Texture::render(SDL_Renderer *& dest, SDL_Rect & rect) const
+{
+    if(SDL_RenderCopyEx(dest, texture, nullptr, &rect, 0, nullptr, SDL_FLIP_NONE))  return false;
+    
+    return true;
+}
+
 int Texture::getW() const
 {
     return width;

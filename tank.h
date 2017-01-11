@@ -3,8 +3,8 @@
 #include "texture.h"
 #include "gamedata.h"
 
-#include <SDL.h>
-#include <SDL_image.h>
+#include <SDL2\SDL.h>
+#include <SDL2\SDL_image.h>
 #include <map>
 #include <vector>
 #include <algorithm>
@@ -14,8 +14,8 @@ class Tank
 private:
     int lastMovement, lastFire;
     int width, height;
-    Point pos;
-    double angle;
+    Point pos, prevPos;
+    double angle, prevAngle;
     double speed, turnSpeed;
     double defaultFireRate, fireRate; // rounds per second
     std::map<std::string, decltype(SDLK_0)> keys;
@@ -25,13 +25,13 @@ private:
 public:
     Texture *tankTexture;
     double maxSpeed, maxTurnSpeed;        // pixels per second
-    bool shouldFire;
-    bool isDestroyed;
+    bool shouldFire, isDestroyed, isAllowed;
 
     Tank();
     bool setKeys(int ind);
     void initialize(double x, double y, double angle);
     bool render() const;
+    void applyPhysics();
     void updatePos();
     double getX() const;
     double getY() const;

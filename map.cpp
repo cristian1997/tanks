@@ -1,6 +1,6 @@
 #include "map.h"
 
-void map::loadMap()
+void Map::loadMap()
 {
 	int x,y,i=0;
 	int xPos = 0, yPos = 0;

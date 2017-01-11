@@ -36,9 +36,9 @@ Tank::Tank()
 
 void Tank::initialize(double x, double y, double _angle)
 {
-    pos.x = x;
-    pos.y = y;
-    angle = _angle;
+    pos.x = prevPos.x = x;
+    pos.y = prevPos.y = y;
+    angle = prevAngle = _angle;
 
     lastMovement = SDL_GetTicks();
     lastFire = -10000;
@@ -57,7 +57,7 @@ bool Tank::render() const
     return tankTexture->render(GD.screenRenderer, pos, angle);
 }
 
-void Tank::updatePos()
+void Tank::applyPhysics()
 {
     int time = SDL_GetTicks();
     Point prevPos = pos;
@@ -70,9 +70,19 @@ void Tank::updatePos()
     if (angle >= 360.0) angle -= 360.0;
     if (angle < 0) angle += 360.0;
 
-    if (outOfScreen()) pos = prevPos, angle = prevAngle;
-
     lastMovement = time;
+}
+
+void Tank::updatePos()
+{
+    if (outOfScreen() || !isAllowed)
+    {
+        pos = prevPos;
+        angle = prevAngle;
+    }
+
+    prevPos = pos;
+    prevAngle = angle;
 }
 
 double Tank::getX() const

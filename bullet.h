@@ -2,9 +2,10 @@
 #include "texture.h"
 #include "geometry.h"
 
-#include <SDL.h>
-#include <SDL_image.h>
+#include <SDL2\SDL.h>
+#include <SDL2\SDL_image.h>
 #include <vector>
+#include <algorithm>
 
 class Bullet
 {
@@ -16,13 +17,15 @@ private:
     double angle;
     static constexpr double speed = 200.0;
 
+    bool outOfScreen();
+
 public:
     bool isDestroyed;
 
     Bullet(double x, double y, double ang, Point _pivot);
     static bool loadImage(const char fileName[]);
     bool render() const;
-    void updatePos();
+    void applyPhysics();
     static double getW();
     static double getH();
     std::vector<Point> getPolygon() const;
