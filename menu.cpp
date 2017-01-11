@@ -4,7 +4,7 @@
 
 bool Menu::loadMedia()
 {
-    if (!background.loadFromFile("sprites/menu.jpg"))
+    if (!background.loadFromFile("sprites/menu.jpg", GD.screenRenderer))
     {
         return false;
     }
@@ -25,7 +25,7 @@ bool Menu::loadMedia()
 
 bool Menu::render() const
 {
-    background.render(Point(0, 0), 0);
+    background.render(GD.screenRenderer, Point(0, 0), 0);
 
     for (const auto &b : buttons)
     {

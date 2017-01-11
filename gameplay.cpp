@@ -8,33 +8,106 @@
 	open(nrLevel);
 }*/
 
+bool GamePlay::loadMedia()
+{
+    /*if (!player.loadImage("sprites/blue tank.png"))
+    {
+        printf("Unable to load image sprites/blue tank.png! SDL Error: %s\n", SDL_GetError());
+        return false;
+    }*/
+
+    player.tankTexture = GD.playerText;
+    tt.tankTexture = GD.playerText;
+
+    /*if (!tt.loadImage("sprites/blue tank.png"))
+    {
+        printf("Unable to load image sprites/blue tank.png! SDL Error: %s\n", SDL_GetError());
+        return false;
+    }*/
+
+    return true;
+}
+
+void GamePlay::updatePos()
+{
+    player.updatePos();
+
+    tt.updatePos();
+
+    for (auto &b : bullets)
+    {
+        b.updatePos();
+    }
+}
+
+bool GamePlay::render()
+{
+    SDL_RenderClear(GD.screenRenderer);
+
+    if (!player.isDestroyed && !player.render())
+    {
+        printf("Error rendering player\n%s\n", SDL_GetError());
+        return false;
+    }
+
+    if (!tt.isDestroyed && !tt.render())
+    {
+        printf("Error rendering player\n%s\n", SDL_GetError());
+        return false;
+    }
+
+    for (auto &b : bullets)
+    {
+        if (!b.render())
+        {
+            printf("Error rendering bullet\n%s\n", SDL_GetError());
+            return false;
+        }
+    }
+
+    SDL_RenderPresent(GD.screenRenderer);
+
+    return true;
+}
+
+bool GamePlay::checkCollisions()
+{
+    auto playerPoly = player.getPolygon();
+    auto ttPoly = tt.getPolygon();
+
+    for (auto &b : bullets)
+    {
+        auto bulletPoly = b.getPolygon();
+
+        if (!player.isDestroyed && Geometry::intersect(playerPoly, bulletPoly))
+            player.isDestroyed = true,
+            b.isDestroyed = true,
+            std::cout << "Player hit\n";
+
+        if (!tt.isDestroyed && Geometry::intersect(ttPoly, bulletPoly))
+            tt.isDestroyed = true,
+            b.isDestroyed = true,
+            std::cout << "Enemy hit\n";
+    }
+
+    return false;
+}
+
 GameData::Scene GamePlay::run()
 {
     //openFile(nrLevel);
 
     int frames;
 
-    if (!player.loadImage("sprites/blue tank.png"))
-    {
-        printf("Unable to load image sprites/blue tank.png! SDL Error: %s\n", SDL_GetError());
-        return GD.QUIT;
-    }
+    if (!loadMedia()) return GD.QUIT;
 
-    tt.loadImage("sprites/blue tank.png");
+    player.initialize(10, 10, 0.0);
+    tt.initialize(500, 60, 0.0);
 
-    player.setPos(10, 10, 0.0);
-    tt.setPos(100, 100, 0.0);
+    player.setKeys(0);
+    tt.setKeys(1);
 
-    if (!player.render())
-        printf("Error rendering player\n");
-
-    if (!tt.render())
-    {
-        printf("tt\n");
-        return GD.QUIT;
-    }
-
-    SDL_RenderPresent(GD.screenRenderer);
+    if (!render()) return GD.QUIT;
 
     bool quit = false;
     SDL_Event e;
@@ -56,6 +129,12 @@ GameData::Scene GamePlay::run()
             {
                 return GD.MENU;
             }
+            else if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_0)
+            {
+                for (auto p : tt.getPolygon()) std::cout << p.x << ' ' << p.y << '\n';
+                std::cout << '\n';
+                for (auto p : bullets[0].getPolygon()) std::cout << p.x << ' ' << p.y << '\n';
+            }
             else player.handleEvent(e), tt.handleEvent(e);
         }
 
@@ -71,33 +150,15 @@ GameData::Scene GamePlay::run()
             bullets.push_back(bullet);
         }
 
-        SDL_RenderClear(GD.screenRenderer);
+        updatePos();
+        checkCollisions();
 
-        player.updatePos();
-        if (!player.render())
-        {
-            printf("Error rendering player\n%s\n", SDL_GetError());
-            return GD.QUIT;
-        }
+        bullets.erase(std::remove_if(bullets.begin(), bullets.end(),
+            [](Bullet b) -> bool {return b.isDestroyed; }),
+            bullets.end()
+        );
 
-        tt.updatePos();
-        if (!tt.render())
-        {
-            printf("Error rendering player\n%s\n", SDL_GetError());
-            return GD.QUIT;
-        }
-
-        for (auto b : bullets)
-        {
-            b.updatePos();
-            if (!b.render())
-            {
-                printf("Error rendering bullet\n%s\n", SDL_GetError());
-                return GD.QUIT;
-            }
-        }
-
-        SDL_RenderPresent(GD.screenRenderer);
+        if (!render()) return GD.QUIT;
 
         ++frames;
 

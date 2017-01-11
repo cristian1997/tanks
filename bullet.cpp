@@ -11,21 +11,24 @@ Bullet::Bullet(double x, double y, double ang, Point _pivot)
     pos.y = y;
     angle = ang;
     pivot = _pivot;
+    isDestroyed = false;
     lastMovement = SDL_GetTicks();
 }
 
 bool Bullet::loadImage(const char fileName[])
 {
-    if (!bulletTexture.loadFromFile(fileName))
+    if (!bulletTexture.loadFromFile(fileName, GD.screenRenderer))
         return false;
 
     width = bulletTexture.getW();
     height = bulletTexture.getH();
+
+    return true;
 }
 
 bool Bullet::render() const
 {
-    return bulletTexture.render(pos, angle, &pivot);
+    return bulletTexture.render(GD.screenRenderer, pos, angle, &pivot);
 }
 
 void Bullet::updatePos()
@@ -50,7 +53,7 @@ double Bullet::getH()
 
 std::vector<Point> Bullet::getPolygon() const
 {
-    Point pivot(pos.x + width / 2, pos.y + height / 2), p;
+    Point pivot(pos.x, pos.y), p;
     std::vector<Point> ret;
 
     p = pos;
@@ -59,10 +62,10 @@ std::vector<Point> Bullet::getPolygon() const
     p = pos; p.x += width;
     ret.push_back(Geometry::rotatePoint(p, pivot, angle));
 
-    p = pos; p.y += height;
+    p = pos; p.x += width; p.y += height;
     ret.push_back(Geometry::rotatePoint(p, pivot, angle));
 
-    p = pos; p.x += width; p.y += height;
+    p = pos; p.y += height;
     ret.push_back(Geometry::rotatePoint(p, pivot, angle));
 
     return ret;

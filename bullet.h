@@ -17,6 +17,7 @@ private:
     static constexpr double speed = 200.0;
 
 public:
+    bool isDestroyed;
 
     Bullet(double x, double y, double ang, Point _pivot);
     static bool loadImage(const char fileName[]);

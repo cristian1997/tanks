@@ -8,6 +8,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <vector>
+#include <algorithm>
 
 class GamePlay 
 {
@@ -16,6 +17,10 @@ private:
     std::vector<Bullet> bullets;
 
 	//void openFile(int nrLevel);
+    bool loadMedia();
+    void updatePos();
+    bool render();
+    bool checkCollisions();
 
 public:
     GameData::Scene run();
