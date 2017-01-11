@@ -20,7 +20,7 @@ bool Bullet::outOfScreen()
     return xmax < 0 || xmin >= GD.SCREEN_WIDTH || ymax < 0 || ymin >= GD.SCREEN_HEIGHT;
 }
 
-Bullet::Bullet(double x, double y, double ang, Point _pivot)
+Bullet::Bullet(double x, double y, double ang, Point _pivot, int _dmg)
 {
     pos.x = x;
     pos.y = y;
@@ -28,6 +28,8 @@ Bullet::Bullet(double x, double y, double ang, Point _pivot)
     pivot = _pivot;
     isDestroyed = false;
     lastMovement = SDL_GetTicks();
+
+    dmg = _dmg;
 }
 
 bool Bullet::loadImage(const char fileName[])
@@ -86,4 +88,9 @@ std::vector<Point> Bullet::getPolygon() const
     ret.push_back(Geometry::rotatePoint(p, pivot, angle));
 
     return ret;
+}
+
+int Bullet::getDmg() const
+{
+    return dmg;
 }

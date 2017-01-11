@@ -31,7 +31,9 @@ Tank::Tank()
     maxTurnSpeed = 144;
     maxSpeed = 100;
     angle = 0.0;
-    defaultFireRate = fireRate = 2.0;
+    baseFireRate = fireRate = 2.0;
+    baseDmg = dmg = 1;
+    hp = 10;
 }
 
 void Tank::initialize(double x, double y, double _angle)
@@ -128,6 +130,33 @@ std::vector<Point> Tank::getPolygon() const
     ret.push_back(Geometry::rotatePoint(p, pivot, angle));
 
     return ret;
+}
+
+void Tank::applyPowerUp(GameData::PowerUps type)
+{
+    switch (type)
+    {
+        case GameData::HP:
+            hp += 10;
+            break;
+        case GameData::FIRE_RATE:
+            fireRate = 2 * baseFireRate;
+            break;
+        case GameData::DMG:
+            dmg = 2 * baseDmg;
+            break;
+    }
+}
+
+void Tank::hit(int dmg)
+{
+    hp -= dmg;
+    if (hp <= 0) isDestroyed = true;
+}
+
+int Tank::getDmg() const
+{
+    return dmg;
 }
 
 void Tank::handleEvent(const SDL_Event &e)

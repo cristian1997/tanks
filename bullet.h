@@ -12,6 +12,7 @@ class Bullet
 private:
     static Texture bulletTexture;
     static int width, height;
+    int dmg;
     int lastMovement;
     Point pos, pivot;
     double angle;
@@ -22,11 +23,12 @@ private:
 public:
     bool isDestroyed;
 
-    Bullet(double x, double y, double ang, Point _pivot);
+    Bullet(double x, double y, double ang, Point _pivot, int _dmg);
     static bool loadImage(const char fileName[]);
     bool render() const;
     void applyPhysics();
     static double getW();
     static double getH();
     std::vector<Point> getPolygon() const;
+    int getDmg() const;
 };

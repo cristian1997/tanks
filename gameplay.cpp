@@ -4,7 +4,7 @@
 
 bool GamePlay::loadMedia()
 {
-    for (int i = 0; i < tanks.size(); ++i) tanks[i].tankTexture = GD.playerText;
+    for (auto i = 0; i < tanks.size(); ++i) tanks[i].tankTexture = GD.playerText;
 
     return true;
 }
@@ -63,7 +63,7 @@ bool GamePlay::checkCollisions()
     std::vector<std::vector<Point>> polys;
     for (const auto &t : tanks) polys.push_back(t.getPolygon());
 
-    for (int i = 0; i < tanks.size(); ++i)
+    for (auto i = 0; i < tanks.size(); ++i)
     {
         for (auto &b : bullets)
         {
@@ -71,12 +71,12 @@ bool GamePlay::checkCollisions()
 
             if (!tanks[i].isDestroyed && Geometry::intersect(polys[i], bulletPoly))
             {
-                tanks[i].isDestroyed = true;
+                tanks[i].hit(b.getDmg());
                 b.isDestroyed = true;
             }
         }
 
-        for (int j = i + 1; j < tanks.size(); ++j)
+        for (auto j = i + 1; j < tanks.size(); ++j)
         {
             if (tanks[i].isDestroyed || tanks[j].isDestroyed) continue;
 
@@ -111,6 +111,7 @@ void GamePlay::generateRandomPowerUp()
 
 GameData::Scene GamePlay::run()
 {
+    srand(time(nullptr));
     tanks.resize(2);
 
     if (!loadMedia()) return GD.QUIT;
@@ -158,7 +159,7 @@ GameData::Scene GamePlay::run()
             double y0 = t.getY() + t.getH() / 2;
 
             Point ret = Geometry::rotatePoint(Point(x, y), Point(x0, y0), t.getAngle());
-            Bullet bullet(ret.x, ret.y, t.getAngle(), Point(0, 0));
+            Bullet bullet(ret.x, ret.y, t.getAngle(), Point(0, 0), t.getDmg());
             bullets.push_back(bullet);
         }
 
@@ -174,7 +175,7 @@ GameData::Scene GamePlay::run()
 
         int time = SDL_GetTicks();
 
-        if (time - lastPowerUp > 10000)
+        if (time - lastPowerUp > 5000)
         {
             generateRandomPowerUp();
             lastPowerUp = time;

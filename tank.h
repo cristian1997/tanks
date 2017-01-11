@@ -13,11 +13,12 @@ class Tank
 {
 private:
     int lastMovement, lastFire;
+    int hp, dmg, baseDmg;
     int width, height;
     Point pos, prevPos;
     double angle, prevAngle;
     double speed, turnSpeed;
-    double defaultFireRate, fireRate; // rounds per second
+    double baseFireRate, fireRate; // rounds per second
     std::map<std::string, decltype(SDLK_0)> keys;
 
     bool outOfScreen() const;
@@ -39,6 +40,9 @@ public:
     double getH() const;
     double getAngle() const;
     std::vector<Point> getPolygon() const;
+    void applyPowerUp(GameData::PowerUps type);
+    void hit(int dmg);
+    int getDmg() const;
 
     void handleEvent(const SDL_Event &e);
 };
