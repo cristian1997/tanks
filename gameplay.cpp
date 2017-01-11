@@ -4,7 +4,7 @@
 
 bool GamePlay::loadMedia()
 {
-    for(int i = 0;  i < nrTanks; ++i) tanks[i].tankTexture = GD.playerText;
+    for (int i = 0; i < tanks.size(); ++i) tanks[i].tankTexture = GD.playerText;
 
     return true;
 }
@@ -48,7 +48,7 @@ bool GamePlay::render()
     {
         if (!p.render())
         {
-            printf("Error rendering\n%s\n", SDL_GetError());
+            printf("Error rendering power up\n%s\n", SDL_GetError());
             return false;
         }
     }
@@ -63,7 +63,7 @@ bool GamePlay::checkCollisions()
     std::vector<std::vector<Point>> polys;
     for (const auto &t : tanks) polys.push_back(t.getPolygon());
 
-    for (int i = 0; i < nrTanks; ++i)
+    for (int i = 0; i < tanks.size(); ++i)
     {
         for (auto &b : bullets)
         {
@@ -76,7 +76,7 @@ bool GamePlay::checkCollisions()
             }
         }
 
-        for (int j = i + 1; j < nrTanks; ++j)
+        for (int j = i + 1; j < tanks.size(); ++j)
         {
             if (tanks[i].isDestroyed || tanks[j].isDestroyed) continue;
 
@@ -100,9 +100,17 @@ bool GamePlay::checkCollisions()
     return false;
 }
 
+void GamePlay::generateRandomPowerUp()
+{
+    int x = rand() % GD.SCREEN_WIDTH;
+    int y = rand() % GD.SCREEN_HEIGHT;
+    GameData::PowerUps type = static_cast<GameData::PowerUps>(rand() % GD.nrPowerUps);
+
+    powerUps.emplace_back(x, y, type);
+}
+
 GameData::Scene GamePlay::run()
 {
-    nrTanks = 2;
     tanks.resize(2);
 
     if (!loadMedia()) return GD.QUIT;
@@ -110,7 +118,7 @@ GameData::Scene GamePlay::run()
     tanks[0].initialize(20, 20, 0);
     tanks[1].initialize(200, 200, 0);
 
-    for (int i = 0; i < nrTanks; ++i) tanks[i].setKeys(i);
+    for (int i = 0; i < tanks.size(); ++i) tanks[i].setKeys(i);
 
     if (!render()) return GD.QUIT;
 
@@ -118,6 +126,7 @@ GameData::Scene GamePlay::run()
     SDL_Event e;
     int frames = 0;
     int start = SDL_GetTicks();
+    int lastPowerUp = start;
 
     while (!quit)
     {
@@ -157,18 +166,27 @@ GameData::Scene GamePlay::run()
         checkCollisions();
         updatePos();
 
+        eraseDestroyed(tanks);
         eraseDestroyed(bullets);
         eraseDestroyed(powerUps);
 
         if (!render()) return GD.QUIT;
 
+        int time = SDL_GetTicks();
+
+        if (time - lastPowerUp > 10000)
+        {
+            generateRandomPowerUp();
+            lastPowerUp = time;
+        }
+
         ++frames;
 
-        if (SDL_GetTicks() - start >= 1000)
+        if (time - start >= 1000)
         {
             //printf("%d\n", frames);
             frames = 0;
-            start = SDL_GetTicks();
+            start = time;
         }
     }
 

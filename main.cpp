@@ -73,6 +73,12 @@ bool loadMedia()
         return false;
     }
 
+    if (!GD.loadMedia())
+    {
+        printf("Unable to load media for gamedata! %s\n", SDL_GetError());
+        return false;
+    }
+
     return true;
 }
 

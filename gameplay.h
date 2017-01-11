@@ -10,11 +10,12 @@
 #include <SDL2/SDL_image.h>
 #include <vector>
 #include <algorithm>
+#include <ctime>
+#include <cstdlib>
 
 class GamePlay 
 {
 private:
-    int nrTanks;
     std::vector<Tank> tanks;
     //Map map;
     std::vector<Bullet> bullets;
@@ -25,6 +26,7 @@ private:
     void updatePos();
     bool render();
     bool checkCollisions();
+    void generateRandomPowerUp();
     
     template<class T>
     void eraseDestroyed(std::vector<T> &objects);

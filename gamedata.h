@@ -4,6 +4,8 @@
 
 #include <SDL2/SDL.h>
 #include <map>
+#include <vector>
+#include <string>
 
 class GameData
 {
@@ -27,6 +29,7 @@ public:
         QUIT
     };
 
+    int nrPowerUps = 3;
     enum PowerUps
     {
         HP,
@@ -40,7 +43,10 @@ public:
     int nrTanks;
 
     Texture *playerText;
+    std::vector<Texture> powerUpTextures;
     std::map<std::string, decltype(SDLK_0)> keys[nrMaxTanks];
+
+    bool loadMedia();
 };
 
 extern GameData GD;

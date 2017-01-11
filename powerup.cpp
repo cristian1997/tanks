@@ -18,7 +18,9 @@ PowerUp::PowerUp(int x, int y, GameData::PowerUps _type)
 
 bool PowerUp::render() const
 {
-    return true;
+    SDL_Rect dest = { pos.x, pos.y, width, height };
+
+    return GD.powerUpTextures[type].render(GD.screenRenderer, dest);
 }
 
 GameData::PowerUps PowerUp::getType() const
