@@ -24,7 +24,7 @@ bool GamePlay::render()
 {
     SDL_RenderClear(GD.screenRenderer);
 
-    //map.render();
+    map.render();
 
     for (const auto &t : tanks)
     {
@@ -85,14 +85,24 @@ bool GamePlay::checkCollisions()
             }
         }
 
+        if (tanks[i].isDestroyed) continue;
+
         for (auto j = i + 1; j < tanks.size(); ++j)
         {
-            if (tanks[i].isDestroyed || tanks[j].isDestroyed) continue;
+            if (tanks[j].isDestroyed) continue;
 
             if (Geometry::intersect(polys[i], polys[j]))
             {
                 tanks[i].isAllowed = false;
                 tanks[j].isAllowed = false;
+            }
+        }
+
+        for (const auto &o : GD.obstacles)
+        {
+            if (Geometry::intersect(polys[i], Geometry::getPolygon(o, GD.SPRITE_WIDTH, GD.SPRITE_HEIGHT)))
+            {
+                tanks[i].isAllowed = false;
             }
         }
 
@@ -106,27 +116,70 @@ bool GamePlay::checkCollisions()
         }
     }
 
+    for (auto &b : bullets)
+    {
+        for (const auto &o : GD.obstacles)
+        {
+            if (Geometry::intersect(b.getPolygon(), Geometry::getPolygon(o, GD.SPRITE_WIDTH, GD.SPRITE_HEIGHT)))
+            {
+                b.isDestroyed = true;
+                break;
+            }
+        }
+    }
+
     return false;
 }
 
 void GamePlay::generateRandomPowerUp()
 {
-    int x = rand() % GD.SCREEN_WIDTH;
-    int y = rand() % GD.SCREEN_HEIGHT;
-    GameData::PowerUps type = static_cast<GameData::PowerUps>(rand() % GD.nrPowerUps);
+    int x, y;
+    bool intersect;
+    GameData::PowerUps type;
+
+    do
+    {
+        x = rand() % GD.SCREEN_WIDTH;
+        y = rand() % GD.SCREEN_HEIGHT;
+        type = static_cast<GameData::PowerUps>(rand() % GD.nrPowerUps);
+
+        intersect = false;
+        for (const auto &t : tanks)
+        {
+            if (Geometry::intersect(t.getPolygon(), Geometry::getPolygon(Point(x, y), GD.SPRITE_WIDTH, GD.SPRITE_HEIGHT)))
+            {
+                intersect = true;
+                break;
+            }
+        }
+
+        for (const auto &o : GD.obstacles)
+        {
+            if (Geometry::intersect(Geometry::getPolygon(o, GD.SPRITE_WIDTH, GD.SPRITE_HEIGHT), Geometry::getPolygon(Point(x, y), GD.SPRITE_WIDTH, GD.SPRITE_HEIGHT)))
+            {
+                intersect = true;
+                break;
+            }
+        }
+    } while (intersect);
 
     powerUps.emplace_back(x, y, type);
 }
 
 GameData::Scene GamePlay::run()
 {
+    map.loadMap();
+
     srand(time(nullptr));
     tanks.resize(2);
 
     if (!loadMedia()) return GD.QUIT;
 
-    tanks[0].initialize(20, 20, 0);
-    tanks[1].initialize(200, 200, 0);
+    tanks[0].initialize(20, 200, 0);
+    tanks[1].initialize(500, 200, 0);
+
+    bullets.clear();
+    powerUps.clear();
 
     for (int i = 0; i < tanks.size(); ++i) tanks[i].setKeys(i);
 

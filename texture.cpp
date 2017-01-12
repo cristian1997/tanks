@@ -2,6 +2,12 @@
 
 bool Texture::loadFromFile(const char fileName[], SDL_Renderer *renderer)
 {
+    if (texture)
+    {
+        SDL_DestroyTexture(texture);
+        texture = nullptr;
+    }
+
     SDL_Surface *tempSurface = nullptr;
     SDL_Texture *retTexture = nullptr;
 
@@ -67,7 +73,7 @@ bool Texture::render(SDL_Renderer *&dest, Point pos, double angle, const Point *
     return true;
 }
 
-bool Texture::render(SDL_Renderer *& dest, SDL_Rect & rect) const
+bool Texture::render(SDL_Renderer *& dest, const SDL_Rect & rect) const
 {
     if(SDL_RenderCopyEx(dest, texture, nullptr, &rect, 0, nullptr, SDL_FLIP_NONE))  return false;
     

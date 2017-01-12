@@ -4,6 +4,7 @@
 #include "geometry.h"
 #include "gamedata.h"
 #include "powerup.h"
+#include "map.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -16,9 +17,9 @@ class GamePlay
 {
 private:
     std::vector<Tank> tanks;
-    //Map map;
     std::vector<Bullet> bullets;
     std::vector<PowerUp> powerUps;
+    Map map;
 
     bool loadMedia();
     void applyPhysics();

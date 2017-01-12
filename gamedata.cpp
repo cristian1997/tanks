@@ -20,10 +20,21 @@ GameData::GameData()
 bool GameData::loadMedia()
 {
     powerUpTextures.resize(nrPowerUps);
-    for (auto i = 0; i < nrPowerUps; ++i)
+    for (int i = 0; i < nrPowerUps; ++i)
     {
-        std::string s = std::string("sprites/powerup") + std::to_string(i) + std::string(".jpg");
+        std::string s = std::string("sprites/powerup") + std::to_string(i) + std::string(".png");
         if (!powerUpTextures[i].loadFromFile(s.c_str(), screenRenderer))
+        {
+            return false;
+        }
+    }
+
+    mapTextures.resize(nrMaps);
+
+    for (int i = 0; i < nrMaps; ++i)
+    {
+        std::string s = std::string("sprites/defaultmap") + std::to_string(i) + std::string(".jpg");
+        if (!mapTextures[i].loadFromFile(s.c_str(), screenRenderer))
         {
             return false;
         }

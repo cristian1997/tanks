@@ -57,3 +57,15 @@ bool Geometry::intersect(const std::vector<Point> poly1, const std::vector<Point
 
     return true;
 }
+
+std::vector<Point> Geometry::getPolygon(Point pos, int width, int height)
+{
+    std::vector<Point> ret;
+
+    ret.emplace_back(pos.x, pos.y);
+    ret.emplace_back(pos.x + width, pos.y);
+    ret.emplace_back(pos.x + width, pos.y + height);
+    ret.emplace_back(pos.x, pos.y + height);
+
+    return ret;
+}

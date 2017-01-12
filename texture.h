@@ -16,7 +16,7 @@ public:
     bool loadFromFile(const char fileName[], SDL_Renderer *renderer);
     bool loadFromText(const std::string text, SDL_Renderer *renderer, TTF_Font *font, SDL_Color &color);
     bool render(SDL_Renderer *&dest, Point pos, double angle, const Point *pivot = nullptr) const;
-    bool render(SDL_Renderer *&dest, SDL_Rect &rect) const;
+    bool render(SDL_Renderer *&dest, const SDL_Rect &rect) const;
     int getW() const;
     int getH() const;
     ~Texture();

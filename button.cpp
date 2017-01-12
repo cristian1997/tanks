@@ -2,11 +2,16 @@
 
 #include <string>
 
-Button::Button(SDL_Rect _pos, GameData::Scene _action, const char fileName[])
+Button::Button(SDL_Rect _pos, GameData::Scene _action, const char fileName[], bool _shouldHover, bool _shouldSelected, int _info)
 {
     isMouseInside = false;
+    isSelected = false;
+
+    info = _info;
     pos = _pos;
     action = _action;
+    shouldHover = _shouldHover;
+    shouldSelected = _shouldSelected;
 
     std::string s;
     
@@ -16,27 +21,49 @@ Button::Button(SDL_Rect _pos, GameData::Scene _action, const char fileName[])
         printf("Couldn't load %s!", s.c_str());
     }
 
-    s = std::string("sprites/hover") + fileName;
-    if (!hoverTexture.loadFromFile(s.c_str(), GD.screenRenderer))
+    if (shouldHover)
     {
-        printf("Couldn't load %s!", s.c_str());
+        s = std::string("sprites/hover") + fileName;
+        if (!hoverTexture.loadFromFile(s.c_str(), GD.screenRenderer))
+        {
+            printf("Couldn't load %s!", s.c_str());
+        }
+    }
+
+    if (shouldSelected)
+    {
+        s = std::string("sprites/selected") + fileName;
+        if (!selectedTexture.loadFromFile(s.c_str(), GD.screenRenderer))
+        {
+            printf("Couldn't load %s!", s.c_str());
+        }
     }
 }
 
 bool Button::render() const
 {
-    if (isMouseInside)
+    if (shouldSelected && isSelected)
     {
-        if (!hoverTexture.render(GD.screenRenderer, Point(pos.x, pos.y), 0))
+        if (!selectedTexture.render(GD.screenRenderer, pos))
         {
             printf("Couldn't render\n");
+            return false;
+        }
+    }
+    else if (shouldHover && isMouseInside)
+    {
+        if (!hoverTexture.render(GD.screenRenderer, pos))
+        {
+            printf("Couldn't render\n");
+            return false;
         }
     }
     else
     {
-        if (!defaultTexture.render(GD.screenRenderer, Point(pos.x, pos.y), 0))
+        if (!defaultTexture.render(GD.screenRenderer, pos))
         {
             printf("Couldn't render\n%s\n", SDL_GetError());
+            return false;
         }
     }
 
@@ -73,6 +100,21 @@ bool Button::handleMouseMotion(int x, int y)
     }
 
     return false;
+}
+
+void Button::select()
+{
+    isSelected = true;
+}
+
+void Button::deselect()
+{
+    isSelected = false;
+}
+
+int Button::getInfo() const
+{
+    return info;
 }
 
 GameData::Scene Button::getAction() const

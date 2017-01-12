@@ -22,8 +22,10 @@ private:
     double baseFireRate, fireRate; // rounds per second
     std::map<std::string, decltype(SDLK_0)> keys;
     int lastPowerUp[GD.nrPowerUps];
+    double baseMaxSpeed, baseMaxTurnSpeed;
 
     bool outOfScreen() const;
+    void updateSpeed(double newSpeed);
 
 public:
     Texture *tankTexture, hpTexture;

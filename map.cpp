@@ -2,20 +2,33 @@
 
 void Map::loadMap()
 {
-	/*int x,y,i=0;
-	int xPos = 0, yPos = 0;
+    std::string s = "sprites/defaultmap" + std::to_string(GD.nrLevel) + std::string(".jpg");
 
-	for (y = 0; y < GD.SCREEN_WIDTH/25; y++)
-	{   
-		for (x = 0; x < GD.SCREEN_HEIGHT/25; x++)
-		{   			
-			mapTexture.loadFromFile(std::to_string(GD.mapTextureTypeVector[i]).c_str(), GD.screenRenderer);
-			mapTexture.render(GD.screenRenderer, xPos, yPos, 0);
-			xPos = xPos + 25;
-			SDL_RenderPresent(GD.screenRenderer);
-			i++;
-		}
-		xPos = 0;
-		yPos = yPos + 25;
-    }*/
+    mapTexture.loadFromFile(s.c_str(), GD.screenRenderer);
+
+    s = "collisions/collisions" + std::to_string(GD.nrLevel) + std::string(".txt");
+    std::ifstream fin(s.c_str());
+
+    GD.obstacles.clear();
+
+    for (int i = 0; i < GD.SCREEN_HEIGHT / GD.SPRITE_HEIGHT; ++i)
+    {
+        for (int j = 0; j < GD.SCREEN_WIDTH / GD.SPRITE_WIDTH; ++j)
+        {
+            int x;
+            fin >> x;
+
+            if (x == 1)
+            {
+                GD.obstacles.emplace_back(j * GD.SPRITE_WIDTH, i * GD.SPRITE_HEIGHT);
+            }
+        }
+    }
+}
+
+bool Map::render() const
+{
+    SDL_Rect rect = {0, 0, GD.SCREEN_WIDTH, GD.SCREEN_HEIGHT};
+
+    return mapTexture.render(GD.screenRenderer, rect);
 }

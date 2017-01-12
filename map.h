@@ -1,14 +1,18 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
 #include "gamedata.h"
 #include "texture.h"
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <string>
+#include <fstream>
+
 
 class Map
 {
+    Texture mapTexture;
+
 public:
-	Texture mapTexture;
 
 	void loadMap();
-	void render();
+	bool render() const;
 };
