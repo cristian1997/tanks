@@ -1,11 +1,11 @@
-#include "mapselection.h"
+#include "gamemodeselection.h"
 
-bool MapSelection::loadMedia()
+bool GameModeSelection::loadMedia()
 {
     return background.loadFromFile("sprites/mapselection.jpg", GD.screenRenderer);
 }
 
-bool MapSelection::render() const
+bool GameModeSelection::render() const
 {
     SDL_Rect rect = {0, 0, GD.SCREEN_WIDTH, GD.SCREEN_HEIGHT};
     if (!background.render(GD.screenRenderer, rect))
@@ -21,34 +21,29 @@ bool MapSelection::render() const
     return true;
 }
 
-bool MapSelection::buildButtons()
+bool GameModeSelection::buildButtons()
 {
     SDL_Rect rect = {0, 0, 200, 150};
     std::string s;
 
-    for (int i = 0; i < GD.nrMaps; ++i)
-    {
-        int lin = i / 3;
-        int col = i % 3;
+    rect = {100, 100, 150, 100};
+    s = std::string("play.png");
+    buttons.emplace_back(rect, GD.NONE, s.c_str(), false, true, 0);
 
-        rect.x = 50 + col * 250;
-        rect.y = 100 + lin * 250;
-
-        s = std::string("map") + std::to_string(i) + std::string(".jpg");
-
-        buttons.emplace_back(rect, GD.NONE, s.c_str(), false, true, i);
-    }
+    rect = {400, 100, 150, 100};
+    s = std::string("play.png");
+    buttons.emplace_back(rect, GD.NONE, s.c_str(), false, true, 1);
 
     rect = {500, 450, 150, 100};
     s = std::string("play.png");
-    buttons.emplace_back(rect, GD.GAMEPLAY, s.c_str(), true, false);
+    buttons.emplace_back(rect, GD.MAPSELECTION, s.c_str(), true, false);
 
     return false;
 }
 
-GameData::Scene MapSelection::run()
+GameData::Scene GameModeSelection::run()
 {
-    GD.nrLevel = -1;
+    GD.gameMode = -1;
     buildButtons();
 
     if (!render())
@@ -93,14 +88,14 @@ GameData::Scene MapSelection::run()
                         {
                             if (b.getAction() != GD.NONE)
                             {
-                                if (GD.nrLevel >= 0)
+                                if (GD.gameMode >= 0)
                                     return b.getAction();
                             }
                             else
                             {
                                 for (auto &bt : buttons) bt.deselect();
                                 b.select();
-                                GD.nrLevel = b.getInfo();
+                                GD.gameMode = b.getInfo();
 
                                 for (auto &bt : buttons) bt.render();
                                 hadBeenRendered = true;

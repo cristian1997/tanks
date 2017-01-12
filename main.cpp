@@ -2,6 +2,7 @@
 #include "gamedata.h"
 #include "gameplay.h"
 #include "mapselection.h"
+#include "gamemodeselection.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -18,6 +19,8 @@ Menu menu;
 GamePlay gamePlay;
 //Options options;
 MapSelection mapSelection;
+GameModeSelection gameModeSelection;
+
 
 bool init()
 {
@@ -94,6 +97,12 @@ bool loadMedia()
         return false;
     }
 
+    if (!gameModeSelection.loadMedia())
+    {
+        printf("Couldn't load map selection media\n%s\n", SDL_GetError());
+        return false;
+    }
+
     return true;
 }
 
@@ -139,6 +148,9 @@ int main(int argc, char* args[])
                         break;
                     case GD.MAPSELECTION:
                         currentScene = mapSelection.run();
+                        break;
+                    case GD.GAMEMODESELECTION:
+                        currentScene = gameModeSelection.run();
                         break;
                     case GD.GAMEPLAY:
                         currentScene = gamePlay.run();

@@ -211,7 +211,7 @@ GameData::Scene GamePlay::run()
             }
         }
 
-        for(const auto &t : tanks)
+        for(auto &t : tanks)
         {
             if (!t.shouldFire) continue;
 

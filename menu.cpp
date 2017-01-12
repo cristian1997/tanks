@@ -12,7 +12,7 @@ bool Menu::loadMedia()
     buttons.clear();
 
     SDL_Rect rectForPlay = {GD.SCREEN_WIDTH / 4, GD.SCREEN_HEIGHT / 4, GD.SCREEN_WIDTH / 2 - 100, GD.SCREEN_HEIGHT / 4 - 50};
-    buttons.emplace_back(rectForPlay, GD.MAPSELECTION, "play.png");
+    buttons.emplace_back(rectForPlay, GD.GAMEMODESELECTION, "play.png");
 
     SDL_Rect rectForOptions = {GD.SCREEN_WIDTH / 4, GD.SCREEN_HEIGHT / 4 + GD.SCREEN_HEIGHT / 4 - 49 , GD.SCREEN_WIDTH / 2 - 100, GD.SCREEN_HEIGHT / 4 - 50};
     //buttons.emplace_back(rectForOptions, GD.OPTIONS, "options.png");

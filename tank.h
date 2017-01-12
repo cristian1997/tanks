@@ -48,7 +48,7 @@ public:
     void applyPowerUp(GameData::PowerUps type);
     void updatePowerUps();
     void modifyHp(int diff);
-    int getDmg() const;
+    int getDmg();
 
     void handleEvent(const SDL_Event &e);
 };

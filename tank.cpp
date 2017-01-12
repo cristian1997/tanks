@@ -169,10 +169,13 @@ std::vector<Point> Tank::getPolygon() const
     p = pos;
     ret.push_back(Geometry::rotatePoint(p, pivot, angle));
 
-    p = pos; p.x += width;
+    p = pos; p.x += 33;
     ret.push_back(Geometry::rotatePoint(p, pivot, angle));
 
-    p = pos; p.x += width; p.y += height;
+    p = pos; p.x += width; p.y += height / 2;
+    ret.push_back(Geometry::rotatePoint(p, pivot, angle));
+
+    p = pos; p.x += 33; p.y += height;
     ret.push_back(Geometry::rotatePoint(p, pivot, angle));
 
     p = pos; p.y += height;
@@ -223,7 +226,7 @@ void Tank::updatePowerUps()
     }
 
     p = GameData::PowerUps::DMG;
-    if (lastPowerUp[p] > 0 && lastPowerUp[p] < time)
+    if (lastPowerUp[p] > 0 && lastPowerUp[p] < time && dmg != GD.INF)
     {
         dmg = baseDmg;
         lastPowerUp[p] = -1;
@@ -237,13 +240,6 @@ void Tank::updatePowerUps()
 
         if (speed != 0) updateSpeed(speed > 0 ? maxSpeed : -maxSpeed);
     }
-
-    p = GameData::PowerUps::ONE_SHOT;
-    if (lastPowerUp[p] > 0 && lastPowerUp[p] < time)
-    {
-        dmg = baseDmg;
-        lastPowerUp[p] = -1;
-    }
 }
 
 void Tank::modifyHp(int diff)
@@ -256,8 +252,9 @@ void Tank::modifyHp(int diff)
     }
 }
 
-int Tank::getDmg() const
+int Tank::getDmg()
 {
+    if (dmg == GD.INF) return dmg = baseDmg, GD.INF;
     return dmg;
 }
 

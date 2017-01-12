@@ -21,12 +21,14 @@ public:
     const int INF = 1000000000;
 
     int nrLevel = 0;
+    int gameMode;
 
     enum Scene
     {
         NONE,
         MENU,
         GAMEPLAY,
+        GAMEMODESELECTION,
         MAPSELECTION,
         OPTIONS,
         QUIT
