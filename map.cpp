@@ -2,7 +2,7 @@
 
 void Map::loadMap()
 {
-	int x,y,i=0;
+	/*int x,y,i=0;
 	int xPos = 0, yPos = 0;
 
 	for (y = 0; y < GD.SCREEN_WIDTH/25; y++)
@@ -17,5 +17,5 @@ void Map::loadMap()
 		}
 		xPos = 0;
 		yPos = yPos + 25;
-    }
+    }*/
 }

@@ -79,6 +79,13 @@ bool loadMedia()
         return false;
     }
 
+    GD.font = TTF_OpenFont("fonts/font.ttf", 28);
+    if (GD.font == NULL)
+    {
+        printf("Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError());
+        return false;
+    }
+
     return true;
 }
 

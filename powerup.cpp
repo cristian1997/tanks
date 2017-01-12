@@ -1,6 +1,6 @@
 #include "powerup.h"
 
-int PowerUp::width = 10, PowerUp::height = 10;
+int PowerUp::width = 25, PowerUp::height = 25;
 
 PowerUp::PowerUp(int x, int y, GameData::PowerUps _type)
 {

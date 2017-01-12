@@ -1,7 +1,6 @@
 #include "tank.h"
 #include "bullet.h"
 #include "texture.h"
-#include "level.h"
 #include "geometry.h"
 #include "gamedata.h"
 #include "powerup.h"

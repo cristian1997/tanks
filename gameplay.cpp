@@ -35,7 +35,7 @@ bool GamePlay::render()
         }
     }
 
-    for (auto &b : bullets)
+    for (const auto &b : bullets)
     {
         if (!b.render())
         {
@@ -49,6 +49,15 @@ bool GamePlay::render()
         if (!p.render())
         {
             printf("Error rendering power up\n%s\n", SDL_GetError());
+            return false;
+        }
+    }
+
+    for (const auto &t : tanks)
+    {
+        if (!t.renderHp())
+        {
+            printf("Error rendering hp\n%s\n", SDL_GetError());
             return false;
         }
     }
@@ -71,7 +80,7 @@ bool GamePlay::checkCollisions()
 
             if (!tanks[i].isDestroyed && Geometry::intersect(polys[i], bulletPoly))
             {
-                tanks[i].hit(b.getDmg());
+                tanks[i].modifyHp(-b.getDmg());
                 b.isDestroyed = true;
             }
         }
@@ -92,7 +101,7 @@ bool GamePlay::checkCollisions()
             if (Geometry::intersect(polys[i], p.getPolygon()))
             {
                 p.isDestroyed = true;
-                // tanks[i] get powerUp
+                tanks[i].applyPowerUp(p.getType());
             }
         }
     }
@@ -167,6 +176,11 @@ GameData::Scene GamePlay::run()
         checkCollisions();
         updatePos();
 
+        for (auto &t : tanks)
+        {
+            t.updatePowerUps();
+        }
+
         eraseDestroyed(tanks);
         eraseDestroyed(bullets);
         eraseDestroyed(powerUps);
@@ -175,7 +189,7 @@ GameData::Scene GamePlay::run()
 
         int time = SDL_GetTicks();
 
-        if (time - lastPowerUp > 5000)
+        if (time - lastPowerUp > 2000)
         {
             generateRandomPowerUp();
             lastPowerUp = time;

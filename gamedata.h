@@ -12,14 +12,14 @@ class GameData
 public:
     GameData();
 
-    const int SCREEN_WIDTH = 800;
-    const int SCREEN_HEIGHT = 600;
+    static const int SCREEN_WIDTH = 800;
+    static const int SCREEN_HEIGHT = 600;
 
-    int GDtextureTypeVector[16] = {0,1,2,4,5,6,7,8,9,10,11,12,13,14,15};
-    int mapTextureTypeVector[(800 / 25) * (600 / 25)];
+    static const int SPRITE_WIDTH = 25;
+    static const int SPRITE_HEIGHT = 25;
+
     int nrLevel;
-
-    static const int nrMaxTanks = 4;
+    bool mapTextureTypeVector[SCREEN_HEIGHT / SPRITE_HEIGHT][SCREEN_WIDTH / SPRITE_WIDTH];
 
     enum Scene
     {
@@ -29,7 +29,7 @@ public:
         QUIT
     };
 
-    int nrPowerUps = 3;
+    static const int nrPowerUps = 3;
     enum PowerUps
     {
         HP,
@@ -39,8 +39,11 @@ public:
 
     SDL_Window *window = nullptr;
     SDL_Renderer *screenRenderer = nullptr;
+    TTF_Font *font = nullptr;
 
-    int nrTanks;
+    static const int nrMaxTanks = 4;
+
+    SDL_Color colors[nrMaxTanks] = {{255, 0, 0}, {0, 255, 0}};
 
     Texture *playerText;
     std::vector<Texture> powerUpTextures;
