@@ -4,6 +4,8 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 #include <vector>
 #include <stdio.h>
 
@@ -36,6 +38,18 @@ bool init()
         printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
     }
 
+    if (TTF_Init() == -1)
+    {
+        printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
+        return false;
+    }
+
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+    {
+        printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+        return false;
+    }
+
     return true;
 }
 
@@ -56,6 +70,19 @@ bool loadMedia()
     if (!Bullet::loadImage("sprites/bullet.png"))
     {
         printf("Unable to load image sprites/bullet.png! SDL Error: %s\n", SDL_GetError());
+        return false;
+    }
+
+    if (!GD.loadMedia())
+    {
+        printf("Unable to load media for gamedata! %s\n", SDL_GetError());
+        return false;
+    }
+
+    GD.font = TTF_OpenFont("fonts/font.ttf", 28);
+    if (GD.font == NULL)
+    {
+        printf("Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError());
         return false;
     }
 

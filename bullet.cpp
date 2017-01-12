@@ -5,7 +5,22 @@
 Texture Bullet::bulletTexture;
 int Bullet::width, Bullet::height;
 
-Bullet::Bullet(double x, double y, double ang, Point _pivot)
+bool Bullet::outOfScreen()
+{
+    double xmin = GD.SCREEN_WIDTH, xmax = -1, ymin = GD.SCREEN_HEIGHT, ymax = -1;
+
+    for (const auto p : getPolygon())
+    {
+        xmin = std::min(xmin, p.x);
+        xmax = std::max(xmax, p.x);
+        ymin = std::min(ymin, p.y);
+        ymax = std::max(ymax, p.y);
+    }
+
+    return xmax < 0 || xmin >= GD.SCREEN_WIDTH || ymax < 0 || ymin >= GD.SCREEN_HEIGHT;
+}
+
+Bullet::Bullet(double x, double y, double ang, Point _pivot, int _dmg)
 {
     pos.x = x;
     pos.y = y;
@@ -13,6 +28,8 @@ Bullet::Bullet(double x, double y, double ang, Point _pivot)
     pivot = _pivot;
     isDestroyed = false;
     lastMovement = SDL_GetTicks();
+
+    dmg = _dmg;
 }
 
 bool Bullet::loadImage(const char fileName[])
@@ -31,7 +48,7 @@ bool Bullet::render() const
     return bulletTexture.render(GD.screenRenderer, pos, angle, &pivot);
 }
 
-void Bullet::updatePos()
+void Bullet::applyPhysics()
 {
     int time = SDL_GetTicks();
 
@@ -39,6 +56,8 @@ void Bullet::updatePos()
     pos.y += speed * (time - lastMovement) * sin(angle / 180.0 * PI) / 1000.0;
 
     lastMovement = time;
+
+    if (outOfScreen()) isDestroyed = true;
 }
 
 double Bullet::getW()
@@ -69,4 +88,9 @@ std::vector<Point> Bullet::getPolygon() const
     ret.push_back(Geometry::rotatePoint(p, pivot, angle));
 
     return ret;
+}
+
+int Bullet::getDmg() const
+{
+    return dmg;
 }

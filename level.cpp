@@ -1,35 +1,26 @@
 #include"level.h"
 
-void Level::open(int nrLevel)
+void openLevel(int nrLevel)
 {
 	std::string s = "level" + std::to_string(nrLevel);
 	std::fstream f(s);
 	f.open(s);
-	renderMap(f);
+	//renderMap(f);
 }
 
-void Level::renderMap(std::fstream &f)
+void renderMap(std::fstream &f)
 {
-	/*int x;
+	int x;
 	int i = 0;
-	int textureTypeVector[64*48];
-	f >> x;
-	nrEnemyTanks = x;
-	f >> x;
-	bossTank = x;
-	f >> x;
-	startPozX = x;
-	f >> x;
-	startPozY = x;
 	
 
-	while(!f.eof)
+	while(f>>x)
 	{
 		f >> x;
-		textureTypeVector[i] = x;
+		GD.mapTextureTypeVector[i] = x;
 		i++;
 	}
 
-	mapa.run(textureTypeVector);*/
+	//mapa.loadMap();
 
 }

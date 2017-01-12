@@ -1,11 +1,14 @@
-#include<SDL2/SDL.h>
-#include<SDL2/SDL_image.h>
-#include"gamedata.h"
-#include"texture.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include "gamedata.h"
+#include "texture.h"
+#include <string>
 
-class map
+class Map
 {
 public:
 	Texture mapTexture;
-	void run(int textureTypeVector[64*48]);
+
+	void loadMap();
+	void render();
 };

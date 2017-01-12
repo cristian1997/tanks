@@ -3,12 +3,14 @@
 #include <iostream>
 
 
-bool Tank::setKeys(int ind)
+bool Tank::setKeys(int _ind)
 {
-    if (ind < 0 || ind >= GD.nrMaxTanks) return false;
+    if (_ind < 0 || _ind >= GD.nrMaxTanks) return false;
 
+    ind = _ind;
     keys = GD.keys[ind];
-    return true;
+
+    return hpTexture.loadFromText(std::to_string(hp), GD.screenRenderer, GD.font, GD.colors[ind]);
 }
 
 bool Tank::outOfScreen() const
@@ -31,14 +33,16 @@ Tank::Tank()
     maxTurnSpeed = 144;
     maxSpeed = 100;
     angle = 0.0;
-    defaultFireRate = fireRate = 2.0;
+    baseFireRate = fireRate = 2.0;
+    baseDmg = dmg = 1;
+    hp = 10;
 }
 
 void Tank::initialize(double x, double y, double _angle)
 {
-    pos.x = x;
-    pos.y = y;
-    angle = _angle;
+    pos.x = prevPos.x = x;
+    pos.y = prevPos.y = y;
+    angle = prevAngle = _angle;
 
     lastMovement = SDL_GetTicks();
     lastFire = -10000;
@@ -50,6 +54,11 @@ void Tank::initialize(double x, double y, double _angle)
     turnSpeed = 0;
     shouldFire = false;
     isDestroyed = false;
+
+    for (auto i = 0; i < GD.nrPowerUps; ++i)
+    {
+        lastPowerUp[i] = -1;
+    }
 }
 
 bool Tank::render() const
@@ -57,7 +66,24 @@ bool Tank::render() const
     return tankTexture->render(GD.screenRenderer, pos, angle);
 }
 
-void Tank::updatePos()
+bool Tank::renderHp() const
+{
+    double xmin = GD.SCREEN_WIDTH, xmax = -1, ymin = GD.SCREEN_HEIGHT, ymax = -1;
+
+    for (const auto p : getPolygon())
+    {
+        xmin = std::min(xmin, p.x);
+        xmax = std::max(xmax, p.x);
+        ymin = std::min(ymin, p.y);
+        ymax = std::max(ymax, p.y);
+    }
+
+    SDL_Rect ret = {xmin, ymin - 20, hpTexture.getW(), hpTexture.getH()};
+
+    return hpTexture.render(GD.screenRenderer, ret);
+}
+
+void Tank::applyPhysics()
 {
     int time = SDL_GetTicks();
     Point prevPos = pos;
@@ -70,9 +96,19 @@ void Tank::updatePos()
     if (angle >= 360.0) angle -= 360.0;
     if (angle < 0) angle += 360.0;
 
-    if (outOfScreen()) pos = prevPos, angle = prevAngle;
-
     lastMovement = time;
+}
+
+void Tank::updatePos()
+{
+    if (outOfScreen() || !isAllowed)
+    {
+        pos = prevPos;
+        angle = prevAngle;
+    }
+
+    prevPos = pos;
+    prevAngle = angle;
 }
 
 double Tank::getX() const
@@ -118,6 +154,58 @@ std::vector<Point> Tank::getPolygon() const
     ret.push_back(Geometry::rotatePoint(p, pivot, angle));
 
     return ret;
+}
+
+void Tank::applyPowerUp(GameData::PowerUps type)
+{
+    switch (type)
+    {
+        case GameData::HP:
+            modifyHp(10);
+            break;
+        case GameData::FIRE_RATE:
+            fireRate = 2 * baseFireRate;
+            lastPowerUp[GameData::FIRE_RATE] = SDL_GetTicks() + 5000;
+            break;
+        case GameData::DMG:
+            dmg = 2 * baseDmg;
+            lastPowerUp[GameData::DMG] = SDL_GetTicks() + 5000;
+            break;
+    }
+}
+
+void Tank::updatePowerUps()
+{
+    int p, time = SDL_GetTicks();
+
+    p = GameData::PowerUps::DMG;
+    if (lastPowerUp[p] > 0 && lastPowerUp[p] < time)
+    {
+        dmg = baseDmg;
+        lastPowerUp[p] = -1;
+    }
+
+    p = GameData::PowerUps::FIRE_RATE;
+    if (lastPowerUp[p] > 0 && lastPowerUp[p] < time)
+    {
+        fireRate = baseFireRate;
+        lastPowerUp[p] = -1;
+    }
+}
+
+void Tank::modifyHp(int diff)
+{
+    hp += diff;
+    if (hp <= 0) isDestroyed = true;
+    else
+    {
+        hpTexture.loadFromText(std::to_string(hp), GD.screenRenderer, GD.font, GD.colors[ind]);
+    }
+}
+
+int Tank::getDmg() const
+{
+    return dmg;
 }
 
 void Tank::handleEvent(const SDL_Event &e)

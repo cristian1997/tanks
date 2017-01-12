@@ -17,4 +17,19 @@ GameData::GameData()
     keys[1][std::string("fire")] = SDLK_SPACE;
 }
 
+bool GameData::loadMedia()
+{
+    powerUpTextures.resize(nrPowerUps);
+    for (auto i = 0; i < nrPowerUps; ++i)
+    {
+        std::string s = std::string("sprites/powerup") + std::to_string(i) + std::string(".jpg");
+        if (!powerUpTextures[i].loadFromFile(s.c_str(), screenRenderer))
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 GameData GD;

@@ -13,25 +13,29 @@ class Tank
 {
 private:
     int lastMovement, lastFire;
+    int ind;
+    int hp, dmg, baseDmg;
     int width, height;
-    Point pos;
-    double angle;
+    Point pos, prevPos;
+    double angle, prevAngle;
     double speed, turnSpeed;
-    double defaultFireRate, fireRate; // rounds per second
+    double baseFireRate, fireRate; // rounds per second
     std::map<std::string, decltype(SDLK_0)> keys;
+    int lastPowerUp[GD.nrPowerUps];
 
     bool outOfScreen() const;
 
 public:
-    Texture *tankTexture;
+    Texture *tankTexture, hpTexture;
     double maxSpeed, maxTurnSpeed;        // pixels per second
-    bool shouldFire;
-    bool isDestroyed;
+    bool shouldFire, isDestroyed, isAllowed;
 
     Tank();
-    bool setKeys(int ind);
+    bool setKeys(int _ind);
     void initialize(double x, double y, double angle);
     bool render() const;
+    bool renderHp() const;
+    void applyPhysics();
     void updatePos();
     double getX() const;
     double getY() const;
@@ -39,6 +43,10 @@ public:
     double getH() const;
     double getAngle() const;
     std::vector<Point> getPolygon() const;
+    void applyPowerUp(GameData::PowerUps type);
+    void updatePowerUps();
+    void modifyHp(int diff);
+    int getDmg() const;
 
     void handleEvent(const SDL_Event &e);
 };

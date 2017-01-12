@@ -4,20 +4,20 @@
 #include <SDL2/SDL_image.h>
 #include <fstream>
 #include <string>
-//#include "map.h"
+#include "map.h"
+#include "gamedata.h"
     
+/*
 
-class Level
-{
+
     int nrEnemyTanks;
     bool bossTank;
     int startPozX;
     int startPozY;
-    //map mapa;
+    map map;
 
-    void open(int nrLevel);
+    void openLevel(int nrLevel);
     void renderMap(std::fstream &);
     int getNrEnemyTanks();
     int getStartPozX();
-    int getStartPozY();
-};
+    int getStartPozY();*/
