@@ -93,6 +93,12 @@ bool GamePlay::checkCollisions()
             {
                 tanks[i].modifyHp(-b.getDmg());
                 b.isDestroyed = true;
+
+                if (Mix_PlayChannel(-1, GD.bulletHit, 0) < 0)
+                {
+                    printf("Error playing sound effect\n");
+                    return GD.QUIT;
+                }
             }
         }
 
@@ -127,6 +133,15 @@ bool GamePlay::checkCollisions()
                 else if (type == 2) tanks[i].onWater = true;
                 else if (type >= 4)
                 {
+                    if (type == GameData::BOMB)
+                    {
+                        if (Mix_PlayChannel(-1, GD.mine, 0) < 0)
+                        {
+                            printf("Error playing sound effect\n%s\n", SDL_GetError());
+                            return false;
+                        }
+                    }
+
                     if (type == GameData::REVERSE)
                     {
                         Point aux = {tanks[0].getX(), tanks[0].getY()};
@@ -165,6 +180,12 @@ bool GamePlay::checkCollisions()
             {
                 b.isDestroyed = true;
                 tanks[i].isDestroyed = true;
+
+                if (Mix_PlayChannel(-1, GD.bulletHit, 0) < 0)
+                {
+                    printf("Error playing sound effect\n");
+                    return GD.QUIT;
+                }
                 break;
             }
         }
@@ -181,13 +202,19 @@ bool GamePlay::checkCollisions()
                     if (Geometry::intersect(bPoly, Geometry::getPolygon(Point(i * GD.SPRITE_WIDTH, j * GD.SPRITE_HEIGHT), GD.SPRITE_WIDTH, GD.SPRITE_HEIGHT)))
                     {
                         b.isDestroyed = true;
+
+                        if (Mix_PlayChannel(-1, GD.bulletHit, 0) < 0)
+                        {
+                            printf("Error playing sound effect\n");
+                            return GD.QUIT;
+                        }
                     }
                 }
             }
         }
     }
 
-    return false;
+    return true;
 }
 
 void GamePlay::generateRandomPowerUp()
@@ -196,7 +223,8 @@ void GamePlay::generateRandomPowerUp()
 
     int x, y;
     bool intersect;
-    GameData::PowerUps type = static_cast<GameData::PowerUps>(4 + rand() % GD.nrPowerUps);
+    //GameData::PowerUps type = static_cast<GameData::PowerUps>(4 + rand() % GD.nrPowerUps);
+    GameData::PowerUps type = GameData::BOMB;
 
     do
     {
@@ -207,9 +235,9 @@ void GamePlay::generateRandomPowerUp()
         if (map.getType(x, y) != 0) continue;
 
         intersect = false;
-        for (const auto &t : tanks)
+        for (int i = 0; i < 2; ++i)
         {
-            if (Geometry::intersect(t.getPolygon(), Geometry::getPolygon(Point(x, y), GD.SPRITE_WIDTH, GD.SPRITE_HEIGHT)))
+            if (Geometry::intersect(tanks[i].getPolygon(), Geometry::getPolygon(Point(x * GD.SPRITE_WIDTH, y * GD.SPRITE_HEIGHT), GD.SPRITE_WIDTH, GD.SPRITE_HEIGHT)))
             {
                 intersect = true;
                 break;
@@ -281,6 +309,12 @@ GameData::Scene GamePlay::run()
             Point ret = Geometry::rotatePoint(Point(x, y), Point(x0, y0), t.getAngle());
             Bullet bullet(ret.x, ret.y, t.getAngle(), Point(0, 0), t.getDmg());
             bullets.push_back(bullet);
+
+            if (Mix_PlayChannel(-1, GD.fire, 0) < 0)
+            {
+                printf("Error playing sound effect\n");
+                return GD.QUIT;
+            }
         }
 
         applyPhysics();

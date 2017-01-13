@@ -50,6 +50,27 @@ bool GameData::loadMedia()
         }
     }
 
+    bulletHit = Mix_LoadWAV("sounds/hit.wav");
+    if (bulletHit == nullptr)
+    {
+        printf("Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        return false;
+    }
+
+    fire = Mix_LoadWAV("sounds/fire.wav");
+    if (bulletHit == nullptr)
+    {
+        printf("Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        return false;
+    }
+
+    mine = Mix_LoadWAV("sounds/mine.wav");
+    if (bulletHit == nullptr)
+    {
+        printf("Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError());
+        return false;
+    }
+
     return true;
 }
 

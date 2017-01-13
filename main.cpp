@@ -9,7 +9,6 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
 #include <vector>
-#include <stdio.h>
 
 bool init();
 bool loadMedia();
@@ -97,7 +96,7 @@ bool loadMedia()
         return false;
     }
 
-    music = Mix_LoadMUS("sounds/menu.wav");
+    music = Mix_LoadMUS("sounds/menu.mp3");
     if (music == nullptr)
     {
         printf("Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError());
@@ -122,7 +121,6 @@ void close()
 
 int main(int argc, char* args[])
 {
-    int frames;
     int currentScene = 4;
     bool quit = 1;
 

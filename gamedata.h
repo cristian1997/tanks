@@ -3,6 +3,7 @@
 #include "texture.h"
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 #include <map>
 #include <vector>
 #include <string>
@@ -56,7 +57,7 @@ public:
     const int nrTankTextures = 3;
     static const int nrMaxTanks = 4;
 
-    static const int nrMaps = 4;
+    static const int nrMaps = 6;
 
     SDL_Color colors[nrMaxTanks] = {{255, 0, 0}, {0, 255, 0}};
 
@@ -64,12 +65,15 @@ public:
         {{20, 300}, {700, 200}},
         {{20, 20}, {730, 540}},
         {{20, 300}, {730, 300}},
-        {{20, 540}, {730, 20}}
-
+        {{20, 540}, {730, 20}},
+        {{20, 300}, {700, 450}},
+        {{20, 300}, {700, 450}}
     };
 
     std::vector<Texture> mapTextures, powerUpTextures, tankTextures;
     std::map<std::string, decltype(SDLK_0)> keys[nrMaxTanks];
+
+    Mix_Chunk *bulletHit = nullptr, *fire = nullptr, *mine = nullptr;
 
     bool loadMedia();
 };
