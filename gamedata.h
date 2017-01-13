@@ -67,7 +67,7 @@ public:
         {{20, 300}, {730, 300}},
         {{20, 540}, {730, 20}},
         {{20, 300}, {700, 450}},
-        {{20, 300}, {700, 450}}
+        {{50, 300}, {400, 320}}
     };
 
     std::vector<Texture> mapTextures, powerUpTextures, tankTextures;
