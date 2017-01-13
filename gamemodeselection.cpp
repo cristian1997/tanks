@@ -34,6 +34,10 @@ bool GameModeSelection::buildButtons()
     s = std::string("blitz.png");
     buttons.emplace_back(rect, GD.NONE, s.c_str(), false, true, 1);
 
+    rect = {100, 250, 150, 100};
+    s = std::string("blitz.png");
+    buttons.emplace_back(rect, GD.NONE, s.c_str(), false, true, 2);
+
     rect = {500, 450, 300, 100};
     s = std::string("continue.png");
     buttons.emplace_back(rect, GD.MAPSELECTION, s.c_str(), true, false);

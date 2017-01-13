@@ -16,7 +16,7 @@ private:
     int lastMovement;
     Point pos, pivot;
     double angle;
-    static constexpr double speed = 250.0;
+    static constexpr double speed = 300.0;
 
     bool outOfScreen();
 

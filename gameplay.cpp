@@ -234,7 +234,7 @@ GameData::Scene GamePlay::run()
         {
             if (!t.shouldFire) continue;
 
-            double x = t.getX() + t.getW() + 5.0;
+            double x = t.getX() + t.getW() + 10.0;
             double y = t.getY() + (t.getH() - Bullet::getH()) / 2.0;
             double x0 = t.getX() + t.getW() / 2;
             double y0 = t.getY() + t.getH() / 2;

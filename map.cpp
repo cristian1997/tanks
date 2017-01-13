@@ -1,6 +1,6 @@
 #include "map.h"
 
-void Map::loadMap(std::vector<Tank> &v)
+void Map::loadMap(std::vector<Tank> &tanks)
 {
     std::string s = "sprites/map" + std::to_string(GD.nrLevel) + std::string(".jpg");
 
@@ -24,9 +24,9 @@ void Map::loadMap(std::vector<Tank> &v)
             }
             else if (x == 3)
             {
-                v.emplace_back(Tank(true));
-                v.back().initialize(j * GD.SPRITE_WIDTH, i * GD.SPRITE_HEIGHT, 0);
-                v.back().setKeys(0, GD.tankTextures.size() - 1);
+                tanks.emplace_back(Tank(true));
+                tanks.back().initialize(j * GD.SPRITE_WIDTH, i * GD.SPRITE_HEIGHT, 0);
+                tanks.back().setKeys(0, GD.tankTextures.size() - 1);
             }
         }
     }
