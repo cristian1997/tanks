@@ -127,7 +127,16 @@ bool GamePlay::checkCollisions()
                 else if (type == 2) tanks[i].onWater = true;
                 else if (type >= 4)
                 {
-                    tanks[i].applyPowerUp(static_cast<GameData::PowerUps>(type));
+                    if (type == GameData::REVERSE)
+                    {
+                        Point aux = {tanks[0].getX(), tanks[0].getY()};
+                        double auux = tanks[0].getAngle();
+
+                        tanks[0].setPos(Point(tanks[1].getX(), tanks[1].getY()), tanks[1].getAngle());
+                        tanks[1].setPos(aux, auux);
+                    }
+                    else tanks[i].applyPowerUp(static_cast<GameData::PowerUps>(type));
+
                     map.setType(ii, j, 0);
 
                     for (auto &p : powerUps)

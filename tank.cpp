@@ -240,9 +240,6 @@ void Tank::applyPowerUp(GameData::PowerUps type)
         case GameData::ONE_SHOT:
             dmg = GD.INF;
             break;
-        case GameData::REVERSE:
-            GD.keys[0].swap(GD.keys[1]);
-            break;
         case GameData::BOMB:
             modifyHp(-3);
             break;
@@ -292,6 +289,12 @@ int Tank::getDmg()
     if (baseDmg == GD.INF) return GD.INF;
     if (dmg == GD.INF) return dmg = baseDmg, GD.INF;
     return dmg;
+}
+
+void Tank::setPos(Point newPoint, double newAngle)
+{
+    pos = newPoint;
+    angle = newAngle;
 }
 
 void Tank::handleEvent(const SDL_Event &e)

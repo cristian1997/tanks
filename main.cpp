@@ -29,7 +29,7 @@ bool init()
         return false;
     }
 
-    GD.window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, GD.SCREEN_WIDTH, GD.SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    GD.window = SDL_CreateWindow("Tanks", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, GD.SCREEN_WIDTH, GD.SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (GD.window == nullptr)
     {
         printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
