@@ -18,10 +18,12 @@ class GamePlay
 private:
     std::vector<Tank> tanks;
     std::vector<Bullet> bullets;
+    std::vector<Point> obstacles;
     std::vector<PowerUp> powerUps;
     Map map;
+    int nrPowerUps;
 
-    bool loadMedia();
+    bool initialize();
     void applyPhysics();
     void updatePos();
     bool render();

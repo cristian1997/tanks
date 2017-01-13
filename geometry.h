@@ -1,11 +1,13 @@
 #pragma once
 
 #include <vector>
+#include <cmath>
 
 struct Point
 {
     double x, y;
     Point(double _x = 0, double _y = 0) : x(_x), y(_y) {}
+    bool operator ==(const Point &p);
 };
 
 namespace Geometry

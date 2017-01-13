@@ -11,9 +11,12 @@
 class Map
 {
     Texture mapTexture;
+    int type[GD.SCREEN_HEIGHT / GD.SPRITE_HEIGHT][GD.SCREEN_WIDTH / GD.SPRITE_WIDTH];
 
 public:
 
-	void loadMap(std::vector<Tank> &v);
+	void loadMap();
 	bool render() const;
+    int getType(int i, int j) const;
+    void setType(int i, int j, int newType);
 };

@@ -2,16 +2,27 @@
 
 #include <iostream>
 
-bool GamePlay::loadMedia()
+bool GamePlay::initialize()
 {
-    //for (auto i = 0; i < tanks.size(); ++i) tanks[i].tankTexture = GD.playerText;
+    for (int i = 0; i < GD.SCREEN_HEIGHT / GD.SPRITE_HEIGHT; ++i)
+    {
+        for (int j = 0; j < GD.SCREEN_WIDTH / GD.SPRITE_WIDTH; ++j)
+        {
+            if (map.getType(i, j) == 3)
+            {
+                tanks.emplace_back(Tank(true));
+                tanks.back().initialize(j * GD.SPRITE_WIDTH, i * GD.SPRITE_HEIGHT, 0);
+                tanks.back().setKeys(0, GD.tankTextures.size() - 1);
+            }
+        }
+    }
 
     return true;
 }
 
 void GamePlay::applyPhysics()
 {
-    for (auto &t : tanks) t.applyPhysics(), t.isAllowed = true;
+    for (auto &t : tanks) t.applyPhysics(), t.isAllowed = true, t.onWater = false;
     for (auto &b : bullets) b.applyPhysics();
 }
 
@@ -100,44 +111,76 @@ bool GamePlay::checkCollisions()
             }
         }
 
-        for (const auto &o : GD.obstacles)
+        int x = tanks[i].getX() / GD.SPRITE_WIDTH;
+        int y = tanks[i].getY() / GD.SPRITE_HEIGHT;
+
+        for (int ii = x - 2; ii <= x + 2; ++ii)
         {
-            if (Geometry::intersect(polys[i], Geometry::getPolygon(o, GD.SPRITE_WIDTH, GD.SPRITE_HEIGHT)))
+            for (int j = y - 2; j <= y + 2; ++j)
             {
-                tanks[i].isAllowed = false;
+                if (ii < 0 || ii >= GD.XDIM || j < 0 || j >= GD.YDIM) continue;
+
+                if (!Geometry::intersect(polys[i], Geometry::getPolygon(Point(ii * GD.SPRITE_WIDTH, j * GD.SPRITE_HEIGHT), GD.SPRITE_WIDTH, GD.SPRITE_HEIGHT)))
+                    continue;
+
+                int type = map.getType(ii, j);
+
+                if (type == 1) tanks[i].isAllowed = false;
+                else if (type == 2) tanks[i].onWater = true;
+                else if (type >= 4)
+                {
+                    tanks[i].applyPowerUp(static_cast<GameData::PowerUps>(type));
+                    map.setType(ii, j, 0);
+
+                    for (auto &p : powerUps)
+                    {
+                        if (p.getPos() == Point(ii * GD.SPRITE_WIDTH, j * GD.SPRITE_HEIGHT))
+                        {
+                            p.isDestroyed = true;
+                            --nrPowerUps;
+                            break;
+                        }
+                    }
+                }
             }
         }
 
-        for (auto &p : powerUps)
+        if (!tanks[i].isAllowed)
         {
-            if (Geometry::intersect(polys[i], p.getPolygon()))
-            {
-                p.isDestroyed = true;
-                tanks[i].applyPowerUp(p.getType());
-            }
+            std::cout << "allowed\n";
         }
     }
 
     for (auto &b : bullets)
     {
-        for (const auto &o : GD.obstacles)
-        {
-            if (Geometry::intersect(b.getPolygon(), Geometry::getPolygon(o, GD.SPRITE_WIDTH, GD.SPRITE_HEIGHT)))
-            {
-                b.isDestroyed = true;
-                break;
-            }
-        }
+        auto bPoly = b.getPolygon();
 
         for (int i = 0; i < tanks.size(); ++i)
         {
             if (!tanks[i].isFake()) continue;
 
-            if (Geometry::intersect(b.getPolygon(), polys[i]))
+            if (Geometry::intersect(bPoly, polys[i]))
             {
                 b.isDestroyed = true;
                 tanks[i].isDestroyed = true;
                 break;
+            }
+        }
+
+        int x = b.getPos().x / GD.SPRITE_WIDTH;
+        int y = b.getPos().y / GD.SPRITE_HEIGHT;
+
+        for (int i = x - 1; i <= x + 1; ++i)
+        {
+            for (int j = y - 1; j <= y + 1; ++j)
+            {
+                if (map.getType(i, j) == 1)
+                {
+                    if (Geometry::intersect(bPoly, Geometry::getPolygon(Point(i * GD.SPRITE_WIDTH, j * GD.SPRITE_HEIGHT), GD.SPRITE_WIDTH, GD.SPRITE_HEIGHT)))
+                    {
+                        b.isDestroyed = true;
+                    }
+                }
             }
         }
     }
@@ -147,19 +190,20 @@ bool GamePlay::checkCollisions()
 
 void GamePlay::generateRandomPowerUp()
 {
-    if (powerUps.size() >= 10) return;
+    if (nrPowerUps >= 10) return;
 
     int x, y;
     bool intersect;
-    GameData::PowerUps type;
+    GameData::PowerUps type = static_cast<GameData::PowerUps>(4 + rand() % GD.nrPowerUps);
 
     do
     {
-        x = rand() % GD.SCREEN_WIDTH;
-        y = rand() % GD.SCREEN_HEIGHT;
-        type = static_cast<GameData::PowerUps>(rand() % GD.nrPowerUps);
-
         intersect = false;
+        x = rand() % (GD.SCREEN_WIDTH / GD.SPRITE_WIDTH);
+        y = rand() % (GD.SCREEN_HEIGHT / GD.SPRITE_HEIGHT);
+
+        if (map.getType(x, y) != 0) continue;
+
         for (const auto &t : tanks)
         {
             if (Geometry::intersect(t.getPolygon(), Geometry::getPolygon(Point(x, y), GD.SPRITE_WIDTH, GD.SPRITE_HEIGHT)))
@@ -168,18 +212,11 @@ void GamePlay::generateRandomPowerUp()
                 break;
             }
         }
-
-        for (const auto &o : GD.obstacles)
-        {
-            if (Geometry::intersect(Geometry::getPolygon(o, GD.SPRITE_WIDTH, GD.SPRITE_HEIGHT), Geometry::getPolygon(Point(x, y), GD.SPRITE_WIDTH, GD.SPRITE_HEIGHT)))
-            {
-                intersect = true;
-                break;
-            }
-        }
     } while (intersect);
 
-    powerUps.emplace_back(x, y, type);
+    map.setType(x, y, type);
+    powerUps.emplace_back(x * GD.SPRITE_WIDTH, y * GD.SPRITE_HEIGHT, type);
+    ++nrPowerUps;
 }
 
 GameData::Scene GamePlay::run()
@@ -189,17 +226,18 @@ GameData::Scene GamePlay::run()
     tanks.clear();
     tanks.resize(2);
 
-    if (!loadMedia()) return GD.QUIT;
+    if (!initialize()) return GD.QUIT;
 
     tanks[0].initialize(20, 300, 0);
     tanks[1].initialize(700, 200, 180);
 
     bullets.clear();
     powerUps.clear();
+    nrPowerUps = 0;
 
     for (int i = 0; i < tanks.size(); ++i) tanks[i].setKeys(i, i);
 
-    map.loadMap(tanks);
+    map.loadMap();
 
     if (!render()) return GD.QUIT;
 
@@ -271,7 +309,7 @@ GameData::Scene GamePlay::run()
 
         if (time - start >= 1000)
         {
-            //printf("%d\n", frames);
+            printf("%d\n", frames);
             frames = 0;
             start = time;
         }

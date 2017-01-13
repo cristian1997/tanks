@@ -20,7 +20,7 @@ bool PowerUp::render() const
 {
     SDL_Rect dest = { pos.x, pos.y, width, height };
 
-    return GD.powerUpTextures[type].render(GD.screenRenderer, dest);
+    return GD.powerUpTextures[type - 4].render(GD.screenRenderer, dest);
 }
 
 GameData::PowerUps PowerUp::getType() const
@@ -31,4 +31,9 @@ GameData::PowerUps PowerUp::getType() const
 std::vector<Point> PowerUp::getPolygon() const
 {
     return poly;
+}
+
+Point PowerUp::getPos() const
+{
+    return pos;
 }

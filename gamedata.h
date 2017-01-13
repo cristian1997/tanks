@@ -18,6 +18,9 @@ public:
     static const int SPRITE_WIDTH = 25;
     static const int SPRITE_HEIGHT = 25;
 
+    const int XDIM = SCREEN_WIDTH / SPRITE_WIDTH;
+    const int YDIM = SCREEN_HEIGHT / SPRITE_HEIGHT;
+
     const int INF = 1000000000;
 
     int nrLevel = 0;
@@ -37,14 +40,14 @@ public:
     static const int nrPowerUps = 8;
     enum PowerUps
     {
-        HP,
-        FIRE_RATE,
-        DMG,
-        SPEED,
-        BEER,
-        ONE_SHOT,
-        REVERSE,
-        BOMB
+        HP = 4,
+        FIRE_RATE = 5,
+        DMG = 6,
+        SPEED = 7,
+        BEER = 8,
+        ONE_SHOT = 9,
+        REVERSE = 10,
+        BOMB = 11
     };
 
     SDL_Window *window = nullptr;
@@ -60,7 +63,6 @@ public:
 
     std::vector<Texture> mapTextures, powerUpTextures, tankTextures;
     std::map<std::string, decltype(SDLK_0)> keys[nrMaxTanks];
-    std::vector<Point> obstacles;
 
     bool loadMedia();
 };

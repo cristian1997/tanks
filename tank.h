@@ -32,7 +32,7 @@ private:
 public:
     Texture hpTexture;
     double maxSpeed, maxTurnSpeed;        // pixels per second
-    bool shouldFire, isDestroyed, isAllowed, halfSpeed;
+    bool shouldFire, isDestroyed, isAllowed, onWater;
 
     Tank(bool _fake = false);
     bool setKeys(int _ind, int textInd = 0);

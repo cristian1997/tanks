@@ -41,7 +41,6 @@ void Tank::updateSpeed(double newSpeed)
     {
         if (newSpeed < 0)
         {
-            //std::swap(keys[std::string("left")], keys[std::string("right")]);
             applyPowerUp(GD.BEER);
         }
     }
@@ -49,13 +48,11 @@ void Tank::updateSpeed(double newSpeed)
     {
         if (speed < 0)
         {
-            //std::swap(keys[std::string("left")], keys[std::string("right")]);
             applyPowerUp(GD.BEER);
         }
     }
     else if (speed * newSpeed < 0)
     {
-        //std::swap(keys[std::string("left")], keys[std::string("right")]);
         applyPowerUp(GD.BEER);
     }
 
@@ -88,7 +85,7 @@ void Tank::initialize(double x, double y, double _angle)
     shouldFire = false;
     isDestroyed = false;
     isBeer = false;
-    halfSpeed = false;
+    onWater = false;
 
     for (auto i = 0; i < GD.nrPowerUps; ++i)
     {
@@ -128,10 +125,10 @@ void Tank::applyPhysics()
     Point prevPos = pos;
     double prevAngle = angle;
 
-    if (halfSpeed) speed /= 2.0;
+    double speedVal = (onWater ? speed / 2.0 : speed);
 
-    pos.x += speed * (time - lastMovement) * cos(angle / 180.0 * PI) / 1000.0;
-    pos.y += speed * (time - lastMovement) * sin(angle / 180.0 * PI) / 1000.0;
+    pos.x += speedVal * (time - lastMovement) * cos(angle / 180.0 * PI) / 1000.0;
+    pos.y += speedVal * (time - lastMovement) * sin(angle / 180.0 * PI) / 1000.0;
 
     angle += turnSpeed * (time - lastMovement) / 1000.0;
     if (angle >= 360.0) angle -= 360.0;
@@ -304,15 +301,6 @@ void Tank::handleEvent(const SDL_Event &e)
 
     auto sym = e.key.keysym.sym;
 
-    /*if (isBeer)
-    {
-        if (e.type == SDL_KEYDOWN)
-        {
-            if (sym == keys[std::string("left")]) sym = keys[std::string("right")];
-            else if (sym == keys[std::string("right")]) sym = keys[std::string("left")];
-        }
-    }*/
-
     switch (e.type)
     {
         case SDL_KEYDOWN:
@@ -329,6 +317,10 @@ void Tank::handleEvent(const SDL_Event &e)
                     lastFire = time;
                     shouldFire = true;
                 }
+            }
+            else if (sym == SDLK_0)
+            {
+                sym = SDLK_0;
             }
             break;
         

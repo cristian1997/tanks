@@ -70,6 +70,11 @@ double Bullet::getH()
     return bulletTexture.getH();
 }
 
+Point Bullet::getPos() const
+{
+    return pos;
+}
+
 std::vector<Point> Bullet::getPolygon() const
 {
     Point pivot(pos.x, pos.y), p;

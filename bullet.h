@@ -29,6 +29,7 @@ public:
     void applyPhysics();
     static double getW();
     static double getH();
+    Point getPos() const;
     std::vector<Point> getPolygon() const;
     int getDmg() const;
 };

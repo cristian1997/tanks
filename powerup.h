@@ -20,4 +20,5 @@ public:
     bool render() const;
     GameData::PowerUps getType() const;
     std::vector<Point> getPolygon() const;
+    Point getPos() const;
 };

@@ -69,3 +69,8 @@ std::vector<Point> Geometry::getPolygon(Point pos, int width, int height)
 
     return ret;
 }
+
+bool Point::operator==(const Point & p)
+{
+    return fabs(x - p.x) < 0.0001 && fabs(y - p.y) < 0.0001;
+}
