@@ -33,6 +33,7 @@ public:
     Texture hpTexture;
     double maxSpeed, maxTurnSpeed;        // pixels per second
     bool shouldFire, isDestroyed, isAllowed, onWater;
+    bool influencedByBeer;
 
     Tank(bool _fake = false);
     bool setKeys(int _ind, int textInd = 0);

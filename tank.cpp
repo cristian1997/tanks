@@ -65,6 +65,7 @@ Tank::Tank(bool _fake)
     baseFireRate = fireRate = 2.0;
     dmg = baseDmg;
     fake = _fake;
+    influencedByBeer = false;
 }
 
 void Tank::initialize(double x, double y, double _angle)
@@ -304,8 +305,16 @@ void Tank::handleEvent(const SDL_Event &e)
         case SDL_KEYDOWN:
             if (sym == (*keys)[std::string("up")]) updateSpeed(maxSpeed);
             else if (sym == (*keys)[std::string("down")]) updateSpeed(-maxSpeed);
-            else if (sym == (*keys)[std::string("left")]) turnSpeed = -maxTurnSpeed;
-            else if (sym == (*keys)[std::string("right")]) turnSpeed = maxTurnSpeed;
+            else if (sym == (*keys)[std::string("left")])
+            {
+                turnSpeed = -maxTurnSpeed;
+                influencedByBeer = isBeer;
+            }
+            else if (sym == (*keys)[std::string("right")])
+            {
+                turnSpeed = maxTurnSpeed;
+                influencedByBeer = isBeer;
+            }
             else if (sym == (*keys)[std::string("fire")])
             {
                 int time = SDL_GetTicks();
@@ -325,8 +334,22 @@ void Tank::handleEvent(const SDL_Event &e)
         case SDL_KEYUP:
             if (sym == (*keys)[std::string("up")]) { if (speed > 0) updateSpeed(0); }
             else if (sym == (*keys)[std::string("down")]) { if (speed < 0) updateSpeed(0); }
-            else if (sym == (*keys)[std::string("left")]) { if (turnSpeed < 0) turnSpeed = 0; }
-            else if (sym == (*keys)[std::string("right")]) { if (turnSpeed > 0) turnSpeed = 0; }
+            else if (sym == (*keys)[std::string("left")])
+            {
+                if (influencedByBeer ^ isBeer)
+                {
+                    if (turnSpeed > 0) turnSpeed = 0;
+                }
+                else if (turnSpeed < 0) turnSpeed = 0;
+            }
+            else if (sym == (*keys)[std::string("right")])
+            {
+                if (influencedByBeer ^ isBeer)
+                {
+                    if (turnSpeed < 0) turnSpeed = 0;
+                }
+                else if (turnSpeed > 0) turnSpeed = 0;
+            }
             break;
     }
 }
