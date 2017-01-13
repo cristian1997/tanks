@@ -1,7 +1,5 @@
 #include "menu.h"
 
-#include <iostream>
-
 bool Menu::loadMedia()
 {
     if (!background.loadFromFile("sprites/menu.jpg", GD.screenRenderer))

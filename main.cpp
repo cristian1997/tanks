@@ -17,7 +17,6 @@ void close();
 
 Menu menu;
 GamePlay gamePlay;
-//Options options;
 MapSelection mapSelection;
 GameModeSelection gameModeSelection;
 
@@ -135,10 +134,6 @@ int main(int argc, char* args[])
                 {
                     case GD.MENU:
                         currentScene = menu.run();
-                        break;
-                    case GD.OPTIONS:
-                        //currentScene = optiuni.run();
-                        quit = true;
                         break;
                     case GD.MAPSELECTION:
                         currentScene = mapSelection.run();

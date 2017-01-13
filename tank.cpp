@@ -1,7 +1,5 @@
 #include "tank.h"
 
-#include <iostream>
-
 
 bool Tank::setKeys(int _ind, int textInd)
 {

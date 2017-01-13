@@ -33,7 +33,6 @@ public:
         GAMEPLAY,
         GAMEMODESELECTION,
         MAPSELECTION,
-        OPTIONS,
         QUIT
     };
 
