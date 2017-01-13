@@ -26,16 +26,16 @@ bool GameModeSelection::buildButtons()
     SDL_Rect rect = {0, 0, 200, 150};
     std::string s;
 
-    rect = {100, 100, 150, 100};
+    rect = {250, 50, 200, 100};
     s = std::string("normal.png");
     buttons.emplace_back(rect, GD.NONE, s.c_str(), false, true, 0);
 
-    rect = {400, 100, 150, 100};
+    rect = {250, 250, 200, 100};
     s = std::string("blitz.png");
     buttons.emplace_back(rect, GD.NONE, s.c_str(), false, true, 1);
 
-    rect = {100, 250, 150, 100};
-    s = std::string("blitz.png");
+    rect = {250, 450, 200, 100};
+    s = std::string("deathmatch.png");
     buttons.emplace_back(rect, GD.NONE, s.c_str(), false, true, 2);
 
     rect = {500, 450, 300, 100};

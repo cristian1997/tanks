@@ -39,7 +39,7 @@ bool MapSelection::buildButtons()
         buttons.emplace_back(rect, GD.NONE, s.c_str(), false, true, i);
     }
 
-    rect = {500, 450, 300, 100};
+    rect = {500, 500, 300, 100};
     s = std::string("continue.png");
     buttons.emplace_back(rect, GD.GAMEPLAY, s.c_str(), true, false);
 
