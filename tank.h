@@ -16,8 +16,8 @@ private:
     int ind;
     int hp, dmg, baseDmg;
     int width, height;
-    Point pos, prevPos;
-    double angle, prevAngle;
+    Point prevPos;
+    double prevAngle;
     double speed, turnSpeed;
     double baseFireRate, fireRate; // rounds per second
     std::map<std::string, decltype(SDLK_0)> *keys;
@@ -34,6 +34,8 @@ public:
     double maxSpeed, maxTurnSpeed;        // pixels per second
     bool shouldFire, isDestroyed, isAllowed, onWater;
     bool influencedByBeer;
+    Point pos;
+    double angle;
 
     Tank(bool _fake = false);
     bool setKeys(int _ind, int textInd = 0);
@@ -53,6 +55,7 @@ public:
     void updatePowerUps();
     void modifyHp(int diff);
     int getDmg();
+    void setPos(Point newPoint, double newAngle);
 
     void handleEvent(const SDL_Event &e);
 };
