@@ -2,8 +2,6 @@
 
 GameData::GameData()
 {
-    playerText = new Texture;
-
     keys[0][std::string("up")] = SDLK_UP;
     keys[0][std::string("down")] = SDLK_DOWN;
     keys[0][std::string("left")] = SDLK_LEFT;
@@ -19,10 +17,22 @@ GameData::GameData()
 
 bool GameData::loadMedia()
 {
+    std::string s;
+
+    tankTextures.resize(nrTankTextures);
+    for (int i = 0; i < nrTankTextures; ++i)
+    {
+        s = std::string("sprites/tank") + std::to_string(i) + std::string(".png");
+        if (!tankTextures[i].loadFromFile(s.c_str(), screenRenderer))
+        {
+            return false;
+        }
+    }
+
     powerUpTextures.resize(nrPowerUps);
     for (int i = 0; i < nrPowerUps; ++i)
     {
-        std::string s = std::string("sprites/powerup") + std::to_string(i) + std::string(".png");
+        s = std::string("sprites/powerup") + std::to_string(i) + std::string(".png");
         if (!powerUpTextures[i].loadFromFile(s.c_str(), screenRenderer))
         {
             return false;
@@ -33,7 +43,7 @@ bool GameData::loadMedia()
 
     for (int i = 0; i < nrMaps; ++i)
     {
-        std::string s = std::string("sprites/defaultmap") + std::to_string(i) + std::string(".jpg");
+        s = std::string("sprites/defaultmap") + std::to_string(i) + std::string(".jpg");
         if (!mapTextures[i].loadFromFile(s.c_str(), screenRenderer))
         {
             return false;

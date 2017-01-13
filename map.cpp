@@ -1,8 +1,8 @@
 #include "map.h"
 
-void Map::loadMap()
+void Map::loadMap(std::vector<Tank> &v)
 {
-    std::string s = "sprites/defaultmap" + std::to_string(GD.nrLevel) + std::string(".jpg");
+    std::string s = "sprites/map" + std::to_string(GD.nrLevel) + std::string(".jpg");
 
     mapTexture.loadFromFile(s.c_str(), GD.screenRenderer);
 
@@ -21,6 +21,12 @@ void Map::loadMap()
             if (x == 1)
             {
                 GD.obstacles.emplace_back(j * GD.SPRITE_WIDTH, i * GD.SPRITE_HEIGHT);
+            }
+            else if (x == 3)
+            {
+                v.emplace_back(Tank(true));
+                v.back().initialize(j * GD.SPRITE_WIDTH, i * GD.SPRITE_HEIGHT, 0);
+                v.back().setKeys(0, GD.tankTextures.size() - 1);
             }
         }
     }

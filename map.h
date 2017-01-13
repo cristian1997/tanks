@@ -1,5 +1,6 @@
 #include "gamedata.h"
 #include "texture.h"
+#include "tank.h"
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -13,6 +14,6 @@ class Map
 
 public:
 
-	void loadMap();
+	void loadMap(std::vector<Tank> &v);
 	bool render() const;
 };

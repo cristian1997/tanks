@@ -51,15 +51,14 @@ public:
     SDL_Renderer *screenRenderer = nullptr;
     TTF_Font *font = nullptr;
 
+    const int nrTankTextures = 3;
     static const int nrMaxTanks = 4;
 
-    const int nrMaps = 2;
+    const int nrMaps = 4;
 
     SDL_Color colors[nrMaxTanks] = {{255, 0, 0}, {0, 255, 0}};
 
-    Texture *playerText;
-    std::vector<Texture> mapTextures;
-    std::vector<Texture> powerUpTextures;
+    std::vector<Texture> mapTextures, powerUpTextures, tankTextures;
     std::map<std::string, decltype(SDLK_0)> keys[nrMaxTanks];
     std::vector<Point> obstacles;
 

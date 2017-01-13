@@ -3,12 +3,19 @@
 #include <iostream>
 
 
-bool Tank::setKeys(int _ind)
+bool Tank::setKeys(int _ind, int textInd)
 {
     if (_ind < 0 || _ind >= GD.nrMaxTanks) return false;
 
     ind = _ind;
-    keys = &GD.keys[ind];
+
+    keys = nullptr;
+    if (!fake) keys = &GD.keys[ind];
+
+    tankTexture = &GD.tankTextures[textInd];
+
+    width = tankTexture->getW();
+    height = tankTexture->getH();
 
     return hpTexture.loadFromText(std::to_string(hp), GD.screenRenderer, GD.font, GD.colors[ind]);
 }
@@ -55,13 +62,14 @@ void Tank::updateSpeed(double newSpeed)
     speed = newSpeed;
 }
 
-Tank::Tank()
+Tank::Tank(bool _fake)
 {
     baseMaxTurnSpeed = maxTurnSpeed = 144;
     baseMaxSpeed = maxSpeed = 100;
     angle = 0.0;
     baseFireRate = fireRate = 2.0;
     dmg = baseDmg;
+    fake = _fake;
 }
 
 void Tank::initialize(double x, double y, double _angle)
@@ -73,10 +81,7 @@ void Tank::initialize(double x, double y, double _angle)
     lastMovement = SDL_GetTicks();
     lastFire = -10000;
 
-    width = tankTexture->getW();
-    height = tankTexture->getH();
-
-    hp = 10;
+    hp = (fake ? 1 : 10);
 
     speed = 0;
     turnSpeed = 0;
@@ -90,7 +95,7 @@ void Tank::initialize(double x, double y, double _angle)
         lastPowerUp[i] = -1;
     }
 
-    dmg = baseDmg = (GD.gameMode == 0 ? 1 : GD.INF);
+    dmg = baseDmg = (GD.gameMode == 2 ? GD.INF : 1);
 }
 
 bool Tank::render() const
@@ -100,6 +105,8 @@ bool Tank::render() const
 
 bool Tank::renderHp() const
 {
+    if (fake) return true;
+
     double xmin = GD.SCREEN_WIDTH, xmax = -1, ymin = GD.SCREEN_HEIGHT, ymax = -1;
 
     for (const auto p : getPolygon())
@@ -170,25 +177,41 @@ double Tank::getAngle() const
     return angle;
 }
 
+bool Tank::isFake() const
+{
+    return fake;
+}
+
 std::vector<Point> Tank::getPolygon() const
 {
-    Point pivot(pos.x + width / 2, pos.y + height / 2), p;
     std::vector<Point> ret;
 
-    p = pos;
-    ret.push_back(Geometry::rotatePoint(p, pivot, angle));
+    if (!fake)
+    {
+        Point pivot(pos.x + width / 2, pos.y + height / 2), p;
 
-    p = pos; p.x += 33;
-    ret.push_back(Geometry::rotatePoint(p, pivot, angle));
+        p = pos;
+        ret.push_back(Geometry::rotatePoint(p, pivot, angle));
 
-    p = pos; p.x += width; p.y += height / 2;
-    ret.push_back(Geometry::rotatePoint(p, pivot, angle));
+        p = pos; p.x += 33;
+        ret.push_back(Geometry::rotatePoint(p, pivot, angle));
 
-    p = pos; p.x += 33; p.y += height;
-    ret.push_back(Geometry::rotatePoint(p, pivot, angle));
+        p = pos; p.x += width; p.y += height / 2;
+        ret.push_back(Geometry::rotatePoint(p, pivot, angle));
 
-    p = pos; p.y += height;
-    ret.push_back(Geometry::rotatePoint(p, pivot, angle));
+        p = pos; p.x += 33; p.y += height;
+        ret.push_back(Geometry::rotatePoint(p, pivot, angle));
+
+        p = pos; p.y += height;
+        ret.push_back(Geometry::rotatePoint(p, pivot, angle));
+    }
+    else
+    {
+        ret.emplace_back(pos.x, pos.y);
+        ret.emplace_back(pos.x + width, pos.y);
+        ret.emplace_back(pos.x + width, pos.y + height);
+        ret.emplace_back(pos.x, pos.y + height);
+    }
 
     return ret;
 }
@@ -215,7 +238,7 @@ void Tank::applyPowerUp(GameData::PowerUps type)
             if (speed != 0) updateSpeed(speed > 0 ? maxSpeed : -maxSpeed);
             break;
         case GameData::BEER:
-            //std::swap(keys[std::string("left")], keys[std::string("right")]);
+            std::swap((*keys)[std::string("left")], (*keys)[std::string("right")]);
             isBeer = !isBeer;
             break;
         case GameData::ONE_SHOT:
@@ -277,6 +300,8 @@ int Tank::getDmg()
 
 void Tank::handleEvent(const SDL_Event &e)
 {
+    if (keys == nullptr) return;
+
     auto sym = e.key.keysym.sym;
 
     /*if (isBeer)

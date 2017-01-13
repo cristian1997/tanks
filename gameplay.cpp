@@ -4,7 +4,7 @@
 
 bool GamePlay::loadMedia()
 {
-    for (auto i = 0; i < tanks.size(); ++i) tanks[i].tankTexture = GD.playerText;
+    //for (auto i = 0; i < tanks.size(); ++i) tanks[i].tankTexture = GD.playerText;
 
     return true;
 }
@@ -74,6 +74,8 @@ bool GamePlay::checkCollisions()
 
     for (auto i = 0; i < tanks.size(); ++i)
     {
+        if (tanks[i].isFake()) continue;
+
         for (auto &b : bullets)
         {
             auto bulletPoly = b.getPolygon();
@@ -126,6 +128,18 @@ bool GamePlay::checkCollisions()
                 break;
             }
         }
+
+        for (int i = 0; i < tanks.size(); ++i)
+        {
+            if (!tanks[i].isFake()) continue;
+
+            if (Geometry::intersect(b.getPolygon(), polys[i]))
+            {
+                b.isDestroyed = true;
+                tanks[i].isDestroyed = true;
+                break;
+            }
+        }
     }
 
     return false;
@@ -133,6 +147,8 @@ bool GamePlay::checkCollisions()
 
 void GamePlay::generateRandomPowerUp()
 {
+    if (powerUps.size() >= 10) return;
+
     int x, y;
     bool intersect;
     GameData::PowerUps type;
@@ -168,32 +184,22 @@ void GamePlay::generateRandomPowerUp()
 
 GameData::Scene GamePlay::run()
 {
-    map.loadMap();
-
     srand(time(nullptr));
+
+    tanks.clear();
     tanks.resize(2);
 
     if (!loadMedia()) return GD.QUIT;
 
-    tanks[0].initialize(20, 200, 0);
-    tanks[1].initialize(500, 200, 0);
+    tanks[0].initialize(20, 300, 0);
+    tanks[1].initialize(700, 200, 180);
 
     bullets.clear();
     powerUps.clear();
 
-    for (int i = 0; i < tanks.size(); ++i) tanks[i].setKeys(i);
+    for (int i = 0; i < tanks.size(); ++i) tanks[i].setKeys(i, i);
 
-    switch (GD.gameMode)
-    {
-        case 0: // NORMAL
-        {
-            break;
-        }
-        case 1: // BLITZ
-        {
-            break;
-        }
-    }
+    map.loadMap(tanks);
 
     if (!render()) return GD.QUIT;
 
@@ -202,6 +208,7 @@ GameData::Scene GamePlay::run()
     int frames = 0;
     int start = SDL_GetTicks();
     int lastPowerUp = start;
+    int powerUpTime = (GD.gameMode == 1 ? 2000 : 5000);
 
     while (!quit)
     {
@@ -254,7 +261,7 @@ GameData::Scene GamePlay::run()
 
         int time = SDL_GetTicks();
 
-        if (time - lastPowerUp > 2000)
+        if (time - lastPowerUp > powerUpTime)
         {
             generateRandomPowerUp();
             lastPowerUp = time;

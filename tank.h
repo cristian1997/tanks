@@ -23,18 +23,19 @@ private:
     std::map<std::string, decltype(SDLK_0)> *keys;
     int lastPowerUp[GD.nrPowerUps];
     double baseMaxSpeed, baseMaxTurnSpeed;
-    bool isBeer;
+    bool isBeer, fake;
+    Texture *tankTexture = nullptr;
 
     bool outOfScreen() const;
     void updateSpeed(double newSpeed);
 
 public:
-    Texture *tankTexture, hpTexture;
+    Texture hpTexture;
     double maxSpeed, maxTurnSpeed;        // pixels per second
     bool shouldFire, isDestroyed, isAllowed, halfSpeed;
 
-    Tank();
-    bool setKeys(int _ind);
+    Tank(bool _fake = false);
+    bool setKeys(int _ind, int textInd = 0);
     void initialize(double x, double y, double angle);
     bool render() const;
     bool renderHp() const;
@@ -45,6 +46,7 @@ public:
     double getW() const;
     double getH() const;
     double getAngle() const;
+    bool isFake() const;
     std::vector<Point> getPolygon() const;
     void applyPowerUp(GameData::PowerUps type);
     void updatePowerUps();

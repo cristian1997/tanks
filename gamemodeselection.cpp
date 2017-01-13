@@ -27,11 +27,11 @@ bool GameModeSelection::buildButtons()
     std::string s;
 
     rect = {100, 100, 150, 100};
-    s = std::string("play.png");
+    s = std::string("normal.png");
     buttons.emplace_back(rect, GD.NONE, s.c_str(), false, true, 0);
 
     rect = {400, 100, 150, 100};
-    s = std::string("play.png");
+    s = std::string("blitz.png");
     buttons.emplace_back(rect, GD.NONE, s.c_str(), false, true, 1);
 
     rect = {500, 450, 300, 100};

@@ -66,12 +66,6 @@ bool loadMedia()
         return false;
     }
 
-    if (!GD.playerText->loadFromFile("sprites/blue tank.png", GD.screenRenderer))
-    {
-        printf("Couldn't load tank\n");
-        return false;
-    }
-
     if (!Bullet::loadImage("sprites/bullet.png"))
     {
         printf("Unable to load image sprites/bullet.png! SDL Error: %s\n", SDL_GetError());
