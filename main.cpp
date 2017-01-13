@@ -19,6 +19,7 @@ Menu menu;
 GamePlay gamePlay;
 MapSelection mapSelection;
 GameModeSelection gameModeSelection;
+Mix_Music *music = nullptr;
 
 
 bool init()
@@ -96,6 +97,13 @@ bool loadMedia()
         return false;
     }
 
+    music = Mix_LoadMUS("sounds/menu.wav");
+    if (music == nullptr)
+    {
+        printf("Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError());
+        return false;
+    }
+
     return true;
 }
 
@@ -103,6 +111,11 @@ void close()
 {
     SDL_DestroyWindow(GD.window);
     GD.window = nullptr;
+
+    SDL_DestroyRenderer(GD.screenRenderer);
+    GD.screenRenderer = nullptr;
+
+    Mix_FreeMusic(music);
 
     SDL_Quit();
 }
@@ -126,6 +139,8 @@ int main(int argc, char* args[])
         }
         else
         {
+            Mix_PlayMusic(music, -1);
+
             auto currentScene = GD.MENU;
             bool quit = false;
             do
