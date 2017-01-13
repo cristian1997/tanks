@@ -20,9 +20,10 @@ private:
     double angle, prevAngle;
     double speed, turnSpeed;
     double baseFireRate, fireRate; // rounds per second
-    std::map<std::string, decltype(SDLK_0)> keys;
+    std::map<std::string, decltype(SDLK_0)> *keys;
     int lastPowerUp[GD.nrPowerUps];
     double baseMaxSpeed, baseMaxTurnSpeed;
+    bool isBeer;
 
     bool outOfScreen() const;
     void updateSpeed(double newSpeed);
@@ -30,7 +31,7 @@ private:
 public:
     Texture *tankTexture, hpTexture;
     double maxSpeed, maxTurnSpeed;        // pixels per second
-    bool shouldFire, isDestroyed, isAllowed;
+    bool shouldFire, isDestroyed, isAllowed, halfSpeed;
 
     Tank();
     bool setKeys(int _ind);

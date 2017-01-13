@@ -8,7 +8,7 @@ bool Tank::setKeys(int _ind)
     if (_ind < 0 || _ind >= GD.nrMaxTanks) return false;
 
     ind = _ind;
-    keys = GD.keys[ind];
+    keys = &GD.keys[ind];
 
     return hpTexture.loadFromText(std::to_string(hp), GD.screenRenderer, GD.font, GD.colors[ind]);
 }
@@ -34,19 +34,22 @@ void Tank::updateSpeed(double newSpeed)
     {
         if (newSpeed < 0)
         {
-            std::swap(keys[std::string("left")], keys[std::string("right")]);
+            //std::swap(keys[std::string("left")], keys[std::string("right")]);
+            applyPowerUp(GD.BEER);
         }
     }
     else if (newSpeed == 0)
     {
         if (speed < 0)
         {
-            std::swap(keys[std::string("left")], keys[std::string("right")]);
+            //std::swap(keys[std::string("left")], keys[std::string("right")]);
+            applyPowerUp(GD.BEER);
         }
     }
     else if (speed * newSpeed < 0)
     {
-        std::swap(keys[std::string("left")], keys[std::string("right")]);
+        //std::swap(keys[std::string("left")], keys[std::string("right")]);
+        applyPowerUp(GD.BEER);
     }
 
     speed = newSpeed;
@@ -58,7 +61,7 @@ Tank::Tank()
     baseMaxSpeed = maxSpeed = 100;
     angle = 0.0;
     baseFireRate = fireRate = 2.0;
-    baseDmg = dmg = 1;
+    dmg = baseDmg;
 }
 
 void Tank::initialize(double x, double y, double _angle)
@@ -79,11 +82,15 @@ void Tank::initialize(double x, double y, double _angle)
     turnSpeed = 0;
     shouldFire = false;
     isDestroyed = false;
+    isBeer = false;
+    halfSpeed = false;
 
     for (auto i = 0; i < GD.nrPowerUps; ++i)
     {
         lastPowerUp[i] = -1;
     }
+
+    dmg = baseDmg = (GD.gameMode == 0 ? 1 : GD.INF);
 }
 
 bool Tank::render() const
@@ -113,6 +120,8 @@ void Tank::applyPhysics()
     int time = SDL_GetTicks();
     Point prevPos = pos;
     double prevAngle = angle;
+
+    if (halfSpeed) speed /= 2.0;
 
     pos.x += speed * (time - lastMovement) * cos(angle / 180.0 * PI) / 1000.0;
     pos.y += speed * (time - lastMovement) * sin(angle / 180.0 * PI) / 1000.0;
@@ -196,7 +205,7 @@ void Tank::applyPowerUp(GameData::PowerUps type)
             lastPowerUp[GameData::FIRE_RATE] = SDL_GetTicks() + 5000;
             break;
         case GameData::DMG:
-            dmg = 2 * baseDmg;
+            dmg = (baseDmg == GD.INF ? GD.INF : 2 * baseDmg);
             lastPowerUp[GameData::DMG] = SDL_GetTicks() + 5000;
             break;
         case GameData::SPEED:
@@ -206,10 +215,17 @@ void Tank::applyPowerUp(GameData::PowerUps type)
             if (speed != 0) updateSpeed(speed > 0 ? maxSpeed : -maxSpeed);
             break;
         case GameData::BEER:
-            std::swap(keys[std::string("left")], keys[std::string("right")]);
+            //std::swap(keys[std::string("left")], keys[std::string("right")]);
+            isBeer = !isBeer;
             break;
         case GameData::ONE_SHOT:
             dmg = GD.INF;
+            break;
+        case GameData::REVERSE:
+            GD.keys[0].swap(GD.keys[1]);
+            break;
+        case GameData::BOMB:
+            modifyHp(-3);
             break;
     }
 }
@@ -254,6 +270,7 @@ void Tank::modifyHp(int diff)
 
 int Tank::getDmg()
 {
+    if (baseDmg == GD.INF) return GD.INF;
     if (dmg == GD.INF) return dmg = baseDmg, GD.INF;
     return dmg;
 }
@@ -262,14 +279,23 @@ void Tank::handleEvent(const SDL_Event &e)
 {
     auto sym = e.key.keysym.sym;
 
+    /*if (isBeer)
+    {
+        if (e.type == SDL_KEYDOWN)
+        {
+            if (sym == keys[std::string("left")]) sym = keys[std::string("right")];
+            else if (sym == keys[std::string("right")]) sym = keys[std::string("left")];
+        }
+    }*/
+
     switch (e.type)
     {
         case SDL_KEYDOWN:
-            if (sym == keys[std::string("up")]) updateSpeed(maxSpeed);
-            else if (sym == keys[std::string("down")]) updateSpeed(-maxSpeed);
-            else if (sym == keys[std::string("left")]) turnSpeed = -maxTurnSpeed;
-            else if (sym == keys[std::string("right")]) turnSpeed = maxTurnSpeed;
-            else if (sym == keys[std::string("fire")])
+            if (sym == (*keys)[std::string("up")]) updateSpeed(maxSpeed);
+            else if (sym == (*keys)[std::string("down")]) updateSpeed(-maxSpeed);
+            else if (sym == (*keys)[std::string("left")]) turnSpeed = -maxTurnSpeed;
+            else if (sym == (*keys)[std::string("right")]) turnSpeed = maxTurnSpeed;
+            else if (sym == (*keys)[std::string("fire")])
             {
                 int time = SDL_GetTicks();
 
@@ -282,10 +308,10 @@ void Tank::handleEvent(const SDL_Event &e)
             break;
         
         case SDL_KEYUP:
-            if (sym == keys[std::string("up")]) { if (speed > 0) updateSpeed(0); }
-            else if (sym == keys[std::string("down")]) { if (speed < 0) updateSpeed(0); }
-            else if (sym == keys[std::string("left")]) { if (turnSpeed * speed <= 0) turnSpeed = 0; }
-            else if (sym == keys[std::string("right")]) { if (turnSpeed * speed >= 0) turnSpeed = 0; }
+            if (sym == (*keys)[std::string("up")]) { if (speed > 0) updateSpeed(0); }
+            else if (sym == (*keys)[std::string("down")]) { if (speed < 0) updateSpeed(0); }
+            else if (sym == (*keys)[std::string("left")]) { if (turnSpeed < 0) turnSpeed = 0; }
+            else if (sym == (*keys)[std::string("right")]) { if (turnSpeed > 0) turnSpeed = 0; }
             break;
     }
 }

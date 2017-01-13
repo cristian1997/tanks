@@ -39,11 +39,11 @@ bool MapSelection::buildButtons()
         buttons.emplace_back(rect, GD.NONE, s.c_str(), false, true, i);
     }
 
-    rect = {500, 450, 150, 100};
-    s = std::string("play.png");
+    rect = {500, 450, 300, 100};
+    s = std::string("continue.png");
     buttons.emplace_back(rect, GD.GAMEPLAY, s.c_str(), true, false);
 
-    return false;
+    return true;
 }
 
 GameData::Scene MapSelection::run()

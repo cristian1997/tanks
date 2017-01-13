@@ -34,7 +34,7 @@ public:
         QUIT
     };
 
-    static const int nrPowerUps = 6;
+    static const int nrPowerUps = 8;
     enum PowerUps
     {
         HP,
@@ -42,7 +42,9 @@ public:
         DMG,
         SPEED,
         BEER,
-        ONE_SHOT
+        ONE_SHOT,
+        REVERSE,
+        BOMB
     };
 
     SDL_Window *window = nullptr;

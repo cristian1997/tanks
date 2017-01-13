@@ -183,6 +183,18 @@ GameData::Scene GamePlay::run()
 
     for (int i = 0; i < tanks.size(); ++i) tanks[i].setKeys(i);
 
+    switch (GD.gameMode)
+    {
+        case 0: // NORMAL
+        {
+            break;
+        }
+        case 1: // BLITZ
+        {
+            break;
+        }
+    }
+
     if (!render()) return GD.QUIT;
 
     bool quit = false;
