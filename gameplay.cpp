@@ -1,7 +1,5 @@
 #include "gameplay.h"
 
-#include <iostream>
-
 bool GamePlay::initialize()
 {
     for (int i = 0; i < GD.SCREEN_HEIGHT / GD.SPRITE_HEIGHT; ++i)
@@ -144,11 +142,6 @@ bool GamePlay::checkCollisions()
                 }
             }
         }
-
-        if (!tanks[i].isAllowed)
-        {
-            std::cout << "allowed\n";
-        }
     }
 
     for (auto &b : bullets)
@@ -243,9 +236,7 @@ GameData::Scene GamePlay::run()
 
     bool quit = false;
     SDL_Event e;
-    int frames = 0;
-    int start = SDL_GetTicks();
-    int lastPowerUp = start;
+    int lastPowerUp = SDL_GetTicks();
     int powerUpTime = (GD.gameMode == 1 ? 2000 : 5000);
 
     while (!quit)
@@ -303,15 +294,6 @@ GameData::Scene GamePlay::run()
         {
             generateRandomPowerUp();
             lastPowerUp = time;
-        }
-
-        ++frames;
-
-        if (time - start >= 1000)
-        {
-            printf("%d\n", frames);
-            frames = 0;
-            start = time;
         }
     }
 
