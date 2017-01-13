@@ -185,19 +185,19 @@ std::vector<Point> Tank::getPolygon() const
     {
         Point pivot(pos.x + width / 2, pos.y + height / 2), p;
 
-        p = pos;
+        p = pos; p.x += 3; p.y += 3;
         ret.push_back(Geometry::rotatePoint(p, pivot, angle));
 
-        p = pos; p.x += 33;
+        p = pos; p.x += 33; p.y += 3;
         ret.push_back(Geometry::rotatePoint(p, pivot, angle));
 
         p = pos; p.x += width; p.y += height / 2;
         ret.push_back(Geometry::rotatePoint(p, pivot, angle));
 
-        p = pos; p.x += 33; p.y += height;
+        p = pos; p.x += 33; p.y += height - 3;
         ret.push_back(Geometry::rotatePoint(p, pivot, angle));
 
-        p = pos; p.y += height;
+        p = pos; p.x += 3; p.y += height - 3;
         ret.push_back(Geometry::rotatePoint(p, pivot, angle));
     }
     else

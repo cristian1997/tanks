@@ -56,9 +56,17 @@ public:
     const int nrTankTextures = 3;
     static const int nrMaxTanks = 4;
 
-    const int nrMaps = 4;
+    static const int nrMaps = 4;
 
     SDL_Color colors[nrMaxTanks] = {{255, 0, 0}, {0, 255, 0}};
+
+    Point spawnPosition[nrMaps][2] = {
+        {{20, 300}, {700, 200}},
+        {{20, 20}, {730, 540}},
+        {{20, 300}, {730, 300}},
+        {{20, 540}, {730, 20}}
+
+    };
 
     std::vector<Texture> mapTextures, powerUpTextures, tankTextures;
     std::map<std::string, decltype(SDLK_0)> keys[nrMaxTanks];

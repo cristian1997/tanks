@@ -11,7 +11,7 @@
 class Map
 {
     Texture mapTexture;
-    int type[GD.SCREEN_HEIGHT / GD.SPRITE_HEIGHT][GD.SCREEN_WIDTH / GD.SPRITE_WIDTH];
+    int type[GD.SCREEN_WIDTH / GD.SPRITE_WIDTH][GD.SCREEN_HEIGHT / GD.SPRITE_HEIGHT];
 
 public:
 

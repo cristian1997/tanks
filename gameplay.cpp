@@ -2,14 +2,14 @@
 
 bool GamePlay::initialize()
 {
-    for (int i = 0; i < GD.SCREEN_HEIGHT / GD.SPRITE_HEIGHT; ++i)
+    for (int i = 0; i < GD.XDIM; ++i)
     {
-        for (int j = 0; j < GD.SCREEN_WIDTH / GD.SPRITE_WIDTH; ++j)
+        for (int j = 0; j < GD.YDIM; ++j)
         {
             if (map.getType(i, j) == 3)
             {
                 tanks.emplace_back(Tank(true));
-                tanks.back().initialize(j * GD.SPRITE_WIDTH, i * GD.SPRITE_HEIGHT, 0);
+                tanks.back().initialize(i * GD.SPRITE_WIDTH, j * GD.SPRITE_HEIGHT, 0);
                 tanks.back().setKeys(0, GD.tankTextures.size() - 1);
             }
         }
@@ -191,12 +191,13 @@ void GamePlay::generateRandomPowerUp()
 
     do
     {
-        intersect = false;
+        intersect = true;
         x = rand() % (GD.SCREEN_WIDTH / GD.SPRITE_WIDTH);
         y = rand() % (GD.SCREEN_HEIGHT / GD.SPRITE_HEIGHT);
 
         if (map.getType(x, y) != 0) continue;
 
+        intersect = false;
         for (const auto &t : tanks)
         {
             if (Geometry::intersect(t.getPolygon(), Geometry::getPolygon(Point(x, y), GD.SPRITE_WIDTH, GD.SPRITE_HEIGHT)))
@@ -219,10 +220,8 @@ GameData::Scene GamePlay::run()
     tanks.clear();
     tanks.resize(2);
 
-    if (!initialize()) return GD.QUIT;
-
-    tanks[0].initialize(20, 300, 0);
-    tanks[1].initialize(700, 200, 180);
+    tanks[0].initialize(GD.spawnPosition[GD.nrLevel][0].x, GD.spawnPosition[GD.nrLevel][0].y, 0);
+    tanks[1].initialize(GD.spawnPosition[GD.nrLevel][1].x, GD.spawnPosition[GD.nrLevel][1].y, 0);
 
     bullets.clear();
     powerUps.clear();
@@ -231,6 +230,8 @@ GameData::Scene GamePlay::run()
     for (int i = 0; i < tanks.size(); ++i) tanks[i].setKeys(i, i);
 
     map.loadMap();
+
+    if (!initialize()) return GD.QUIT;
 
     if (!render()) return GD.QUIT;
 
